@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<title>Scale IT AR App</title>
+
+	<!-- include three.js library -->
+	<script src='js/three.js'></script>
+	<script src='js/OBJLoader.js'></script>
+	<script src='js/MTLLoader.js'></script>
+
+	<!-- include jsartookit -->
+	<script src="jsartoolkit5/artoolkit.min.js"></script>
+	<script src="jsartoolkit5/artoolkit.api.js"></script>
+
+
+
+	<!-- include threex.artoolkit -->
+	<script src="threex/threex-artoolkitsource.js"></script>
+	<script src="threex/threex-artoolkitcontext.js"></script>
+	<script src="threex/threex-arbasecontrols.js"></script>
+	<script src="threex/threex-armarkercontrols.js"></script>
+</head>
+
+<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
+
+<!-- 
+  AR App created by Matthias Schedel
+  Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
+-->
+
+<script>
+var scene, keyboard, camera, renderer, clock, deltaTime, totalTime;
+var objects = []
+var models_dict = []
+var arToolkitSource, arToolkitContext;
+var doRotate = true;
+var markerRoot1, markerRoot2;
+var mesh1, mesh6, mesh7;
+
+initialize();
+animate();
+
+function initialize()
+{
+	scene = new THREE.Scene();
+	let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.5 );
+	scene.add( ambientLight );
+				
+	camera = new THREE.PerspectiveCamera();
+	scene.add(camera);
+
+	renderer = new THREE.WebGLRenderer({
+		antialias : true,
+		alpha: true
+	});
+	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+	renderer.setSize( 640, 480 );
+	renderer.domElement.style.position = 'absolute'
+	renderer.domElement.style.top = '0px'
+	renderer.domElement.style.left = '0px'
+	document.body.appendChild( renderer.domElement );
+
+	clock = new THREE.Clock();
+	deltaTime = 0;
+	totalTime = 0;
+	
+	////////////////////////////////////////////////////////////
+	// setup arToolkitSource
+	////////////////////////////////////////////////////////////
+
+	arToolkitSource = new THREEx.ArToolkitSource({
+		sourceType : 'webcam'
+	});
+
+	function onResize()
+	{
+		arToolkitSource.onResize()	
+		arToolkitSource.copySizeTo(renderer.domElement)	
+		if ( arToolkitContext.arController !== null )
+		{
+			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
+		}	
+	}
+
+	arToolkitSource.init(function onReady(){
+		onResize()
+	});
+	
+	// handle resize event
+	window.addEventListener('resize', function(){
+		onResize()
+	});
+
+
+	
+	////////////////////////////////////////////////////////////
+	// setup arToolkitContext
+	////////////////////////////////////////////////////////////	
+
+	// create atToolkitContext
+	arToolkitContext = new THREEx.ArToolkitContext({
+		cameraParametersUrl: 'data/camera_para.dat',
+		detectionMode: 'mono'
+	});
+	
+	// copy projection matrix to camera when initialization complete
+	arToolkitContext.init( function onCompleted(){
+		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+	});
+/*
+	document.addEventListener('mousedown', function(evt){
+		event.preventDefault()
+		onDocumentMouseMove(evt);
+	});
+
+	document.addEventListener('mousemove', function(evt){
+		onDocumentMouseMove(evt);
+	});
+*/
+	window.addEventListener('touchstart', function(evt)
+	{
+		event.preventDefault();
+		onDocumentMouseMove(evt);
+	}
+	)
+	////////////////////////////////////////////////////////////
+	// setup markerRoots
+	////////////////////////////////////////////////////////////
+
+	let loader = new THREE.TextureLoader();
+	let texture = loader.load( 'images/border.png' );
+	//scale.hero hiro
+	let patternArray = ["letterA", "letterB", "letterC", "letterD", "letterF", "kanji", "scale.hero"];
+	let colorArray   = [0xff0000, 0xff8800, 0xffff00, 0x00cc00, 0x0000ff, 0xcc00ff, 0xcccccc];
+	for (let i = 0; i < 7; i++)
+	{
+		let markerRoot = new THREE.Group();
+		scene.add(markerRoot);
+		let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+			type : 'pattern', patternUrl : "data/" + patternArray[i] + ".patt",
+		});
+		
+		switch(i) {
+			case 5:
+			let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
+			let materialx = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.0 } );
+				mesh6 = new THREE.Mesh( geometry1, materialx );
+				mesh6.rotation.x = -Math.PI/2;
+				mesh6.name = 'machine_base'
+				markerRoot.add( mesh6 );
+				
+				function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
+				function onError(xhr) { console.log( 'An error happened' ); }
+				
+				{
+					let map = new THREE.TextureLoader().setPath( 'images/' ).load('scale/scale_open.png');
+					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+					let sprite = new THREE.Sprite(material1);
+					sprite.rotation.x = 180
+					sprite.rotation.z = 0
+					sprite.rotation.y = 180
+					sprite.position.y = 1.5
+					sprite.position.x = 1
+					sprite.position.z = -.5
+					sprite.scale.x = .3
+					sprite.scale.y = .3
+					sprite.scale.z = .3
+					sprite.visible = false;
+					sprite.name = "machine_open"
+					markerRoot.add( sprite );
+					{
+					let geometry2 = new THREE.PlaneBufferGeometry(1,1, 4,4);
+
+					let materialy = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.0, side: THREE.DoubleSide } );
+					let nmesh7 = new THREE.Mesh( geometry2, materialy );
+					nmesh7.rotation.x = 90;
+					nmesh7.position.x = 1;
+					nmesh7.position.z = -.5;
+					nmesh7.position.y = 1.5;
+					nmesh7.scale.x = .6
+					nmesh7.scale.y = .6
+					nmesh7.scale.z = .6
+					nmesh7.visible = false;
+					nmesh7.name = 'machine_open_base';
+					markerRoot.add( nmesh7 );
+				}
+				}
+				{
+					let map = new THREE.TextureLoader().setPath( 'images/' ).load('scale/scale_2.png');
+					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+					let sprite = new THREE.Sprite(material1);
+					sprite.rotation.x = 180
+					sprite.rotation.z = 0
+					sprite.rotation.y = 180
+					sprite.position.y = .5
+					sprite.visible = false;
+					sprite.name = "machine_sprite"
+					markerRoot.add( sprite );
+				}
+
+				new THREE.MTLLoader()
+					.setPath( 'models/' )
+					.load( 'model-1.mtl', function ( materials ) {
+						materials.preload();
+						new THREE.OBJLoader()
+							.setMaterials( materials )
+							.setPath( 'models/' )
+							.load( 'model-1.obj', function ( group ) {
+								mesh0 = group//.children[0];
+								mesh0.position.y = 1.25/3;
+								mesh0.scale.set(1.2,1.2,1.2);
+								mesh0.name = "machine_model"
+								mesh0.visible = true
+								markerRoot.add(mesh0);
+							}, onProgress, onError );
+					});
+			
+			break;
+
+			case 6:
+				{
+					let geometry2 = new THREE.PlaneBufferGeometry(1,1, 4,4);
+
+					let materialy = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.00 } );
+					mesh7 = new THREE.Mesh( geometry2, materialy );
+					mesh7.rotation.x = -Math.PI/2;
+					mesh7.name = 'machine_base'
+					markerRoot.add( mesh7 );
+				}
+				
+				function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
+				function onError(xhr) { console.log( 'An error happened' ); }
+			
+				{
+					let map = new THREE.TextureLoader().setPath( 'images/' ).load('scale/scale_open.png');
+					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+					let sprite = new THREE.Sprite(material1);
+					sprite.rotation.x = 180
+					sprite.rotation.z = 0
+					sprite.rotation.y = 180
+					sprite.position.y = 1.5
+					sprite.position.x = 1
+					sprite.position.z = -.5
+					sprite.scale.x = .3
+					sprite.scale.y = .3
+					sprite.scale.z = .3
+					sprite.visible = false;
+					sprite.name = "product_open"
+					markerRoot.add( sprite );
+					{
+					let geometry2 = new THREE.PlaneBufferGeometry(1,1, 4,4);
+
+					let materialy = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.0, side: THREE.DoubleSide } );
+					let nmesh7 = new THREE.Mesh( geometry2, materialy );
+					nmesh7.rotation.x = 90;
+					nmesh7.position.x = 1;
+					nmesh7.position.z = -.5;
+					nmesh7.position.y = 1.5;
+					nmesh7.scale.x = .6
+					nmesh7.scale.y = .6
+					nmesh7.scale.z = .6
+					nmesh7.name = 'product_open_base';
+					nmesh7.visible = false;
+					markerRoot.add( nmesh7 );
+				}
+				}
+
+				{
+					let map = new THREE.TextureLoader().setPath( 'images/' ).load('scale/scale_it_1.png');
+					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+					let sprite = new THREE.Sprite(material1);
+					sprite.rotation.x = 180
+					sprite.rotation.z = 0
+					sprite.rotation.y = 180
+					sprite.position.y = .5
+					console.log('sprite',sprite)
+					sprite.visible = false;
+					sprite.name = "product_sprite"
+					markerRoot.add( sprite );
+				}
+				
+				
+				new THREE.MTLLoader()
+					.setPath( 'models/' )
+					.load( 'model-2.mtl', function ( materials ) {
+						materials.preload();
+						new THREE.OBJLoader()
+							.setMaterials( materials )
+							.setPath( 'models/' )
+							.load( 'model-2.obj', function ( group ) {
+								mesh0 = group//.children[0];
+								mesh0.position.y = 1.25/3;
+								mesh0.scale.set(1.1,1.1,1.1);
+								mesh0.visible = true;
+								mesh0.name = "product_model"
+								markerRoot.add(mesh0);
+								models_dict.push({
+									key: mesh0.name,
+									value: mesh0
+								})
+							}, onProgress, onError );
+					});
+			
+			break;
+			default:
+			// mesh.position.y = 1.25/2;
+			// markerRoot.add( mesh );
+		}
+	}
+}
+
+
+function update()
+{
+
+	if ( arToolkitSource.ready !== false )
+		arToolkitContext.update( arToolkitSource.domElement );
+}
+
+function render()
+{
+	renderer.render( scene, camera );
+}
+
+function animate()
+{
+	requestAnimationFrame(animate);
+	deltaTime = clock.getDelta();
+	totalTime += deltaTime;
+	if (doRotate) {
+		// if (scene.children[7] !== undefined && scene.children[7].children[1] !== undefined)
+		// scene.children[7].children[1].rotation.y += Math.PI * deltaTime * 0.4
+		if (scene.children[7] !== undefined && scene.children[7].children[4] !== undefined)
+		scene.children[7].children[4].rotation.y += Math.PI * deltaTime * 0.4
+		
+		
+		// if (scene.children[8] !== undefined && scene.children[8].children[1] !== undefined)
+		// scene.children[8].children[1].rotation.y += Math.PI * deltaTime * .4
+		if (scene.children[8] !== undefined && scene.children[8].children[4] !== undefined)
+		scene.children[8].children[4].rotation.y += Math.PI * deltaTime * .4
+		// if (scene.children[9] !== undefined && scene.children[9].children[1] !== undefined)
+		// scene.children[9].children[1].rotation.y += Math.PI * deltaTime * .4
+	}
+	
+
+	update();
+	render();
+}
+
+var containsGun = function (objects) {
+    if (!objects || objects === undefined || objects == null) return false
+    if (objects[0].object.name == 'PortalGun') { return true }
+    return false
+}
+var doObject = function(o)
+{
+	console.log('name',o.object.name)
+	console.log('visible',o.object.visible)
+	if (o.object.name !== undefined)
+	{
+		switch (o.object.name)
+		{
+			case "machine_sprite":
+			o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+			o.object.visible = !o.object.visible
+
+			break;
+			case "machine_model":
+			o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+			o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+			o.object.visible = !o.object.visible
+			break;
+			case "machine_open_base":
+			alert('open machine')
+			case "machine_open":
+			console.log('open machine')
+			// if (o.object.visible)	
+			window.location.href = "https://scale-it.org/de/Inspektionsdaten_aus_der_Produktion.html";
+			break;
+
+			case "machine_base":
+			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+			o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+			o.object.visible = !o.object.visible
+			break;
+
+			case "product_model":
+			o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+			o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+			o.object.visible = !o.object.visible
+
+			break;
+			case "product_sprite":
+			o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+			o.object.visible = !o.object.visible
+			
+			break;
+			case "product_open_base":
+			alert('open product')
+			case "product_open":
+			console.log('open product')
+			// if (o.object.visible)	
+			window.location.href = "https://scale-it.org/de/";
+			break;
+			case "product_base":
+			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+			o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+			o.object.visible = !o.object.visible
+			break;
+
+
+			
+			default:
+		}
+	}
+}
+
+function flip_method(object)
+{
+	if (object === undefined || object.children === undefined || object.children[1] === undefined || object.children[2] === undefined) 
+	{
+		console.error('undefiend')
+		return;
+	}
+	if (object.children[1].visible == false)
+	{
+		object.children[1].visible	= true;
+		object.children[2].visible	= false;
+
+	} else {
+		object.children[1].visible	= false;
+		object.children[2].visible	= true;
+	}
+}
+
+var onDocumentMouseMove = function (evt) {
+    var raycaster = new THREE.Raycaster(); // create once
+    var mouse = new THREE.Vector2(); // create once
+	if (evt.targetTouches !== undefined) {
+	mouse.x = +(evt.targetTouches[0].pageX / window.innerWidth) * 2 - 1;
+	mouse.y = -(evt.targetTouches[0].pageY / window.innerHeight) * 2 + 1;	
+	} else {
+ 	mouse.x = (evt.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = - (evt.clientY / renderer.domElement.clientHeight) * 2 + 1;
+	}
+   
+   console.log(`mouse (x,y) = (${mouse.x},${mouse.y})`);
+
+	raycaster.setFromCamera(mouse, camera);
+	console.log('ray', scene.children)
+    console.log('ray', scene.children[7].children)
+	console.log('ray', scene.children[8].children)
+    // var intersects = raycaster.intersectObjects(scene.children[7].children.concat(scene.children[8].children))
+	var intersects = raycaster.intersectObjects(scene.children[7].children).concat(raycaster.intersectObjects(scene.children[8].children))
+
+	console.log('intersects',intersects);
+	if (intersects.length > 0) doObject(intersects[0]);
+}
+</script>
+
+</body>
+</html>

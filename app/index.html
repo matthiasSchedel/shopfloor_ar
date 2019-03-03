@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<title>Scale IT AR App</title>
@@ -99,7 +99,7 @@ function initialize()
 
 	// create atToolkitContext
 	arToolkitContext = new THREEx.ArToolkitContext({
-		cameraParametersUrl: 'data/camera_para.dat',
+		cameraParametersUrl: 'data/camera-parameter/camera_para.dat',
 		detectionMode: 'mono'
 	});
 	
@@ -128,16 +128,16 @@ function initialize()
 	////////////////////////////////////////////////////////////
 
 	let loader = new THREE.TextureLoader();
-	let texture = loader.load( 'images/border.png' );
+	// let texture = loader.load( 'images/border.png' );
 	//scale.hero hiro
-	let patternArray = ["letterA", "letterB", "letterC", "letterD", "letterF", "kanji", "scale.hero"];
+	let patternArray = ["letterA", "letterB", "letterC", "letterD", "letterF", "robot-arm_marker", "board_marker"];
 	let colorArray   = [0xff0000, 0xff8800, 0xffff00, 0x00cc00, 0x0000ff, 0xcc00ff, 0xcccccc];
 	for (let i = 0; i < 7; i++)
 	{
 		let markerRoot = new THREE.Group();
 		scene.add(markerRoot);
 		let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
-			type : 'pattern', patternUrl : "data/" + patternArray[i] + ".patt",
+			type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
 		});
 		
 		switch(i) {
@@ -153,7 +153,7 @@ function initialize()
 				function onError(xhr) { console.log( 'An error happened' ); }
 				
 				{
-					let map = new THREE.TextureLoader().setPath( 'images/' ).load('scale/scale_open.png');
+					let map = new THREE.TextureLoader().setPath( 'data/images/' ).load('scale_open.png');
 					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
 					let sprite = new THREE.Sprite(material1);
 					sprite.rotation.x = 180
@@ -186,7 +186,7 @@ function initialize()
 				}
 				}
 				{
-					let map = new THREE.TextureLoader().setPath( 'images/' ).load('scale/scale_2.png');
+					let map = new THREE.TextureLoader().setPath( 'data/images/' ).load('scale_2.png');
 					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
 					let sprite = new THREE.Sprite(material1);
 					sprite.rotation.x = 180
@@ -199,12 +199,12 @@ function initialize()
 				}
 
 				new THREE.MTLLoader()
-					.setPath( 'models/' )
+					.setPath( 'data/models/' )
 					.load( 'model-1.mtl', function ( materials ) {
 						materials.preload();
 						new THREE.OBJLoader()
 							.setMaterials( materials )
-							.setPath( 'models/' )
+							.setPath( 'data/models/' )
 							.load( 'model-1.obj', function ( group ) {
 								mesh0 = group//.children[0];
 								mesh0.position.y = 1.25/3;
@@ -232,7 +232,7 @@ function initialize()
 				function onError(xhr) { console.log( 'An error happened' ); }
 			
 				{
-					let map = new THREE.TextureLoader().setPath( 'images/' ).load('scale/scale_open.png');
+					let map = new THREE.TextureLoader().setPath( 'data/images/' ).load('scale_open.png');
 					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
 					let sprite = new THREE.Sprite(material1);
 					sprite.rotation.x = 180
@@ -266,7 +266,7 @@ function initialize()
 				}
 
 				{
-					let map = new THREE.TextureLoader().setPath( 'images/' ).load('scale/scale_it_1.png');
+					let map = new THREE.TextureLoader().setPath( 'data/images/' ).load('scale_it_1.png');
 					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
 					let sprite = new THREE.Sprite(material1);
 					sprite.rotation.x = 180
@@ -281,16 +281,16 @@ function initialize()
 				
 				
 				new THREE.MTLLoader()
-					.setPath( 'models/' )
+					.setPath( 'data/models/' )
 					.load( 'model-2.mtl', function ( materials ) {
 						materials.preload();
 						new THREE.OBJLoader()
 							.setMaterials( materials )
-							.setPath( 'models/' )
+							.setPath( 'data/models/' )
 							.load( 'model-2.obj', function ( group ) {
 								mesh0 = group//.children[0];
 								mesh0.position.y = 1.25/3;
-								mesh0.scale.set(1.1,1.1,1.1);
+								mesh0.scale.set(.7,.7,.7);
 								mesh0.visible = true;
 								mesh0.name = "product_model"
 								markerRoot.add(mesh0);

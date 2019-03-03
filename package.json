@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "rebase":"git checkout gh-pages; git rebase master; git push origin gh-pages; git checkout master",
     "start":"http-server -S -C cert.pem -o",
     "init:cert":"openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem"
   },

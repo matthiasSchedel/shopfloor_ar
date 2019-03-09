@@ -188,7 +188,29 @@ var models = {
 	}
 }
 
+var ElementIframe = function ( id, x, y, z, ry ) {
 
+var div = document.createElement( 'div' );
+div.style.width = '480px';
+div.style.height = '360px';
+div.style.backgroundColor = '#000';
+
+var iframe = document.createElement( 'iframe' );
+iframe.style.width = '480px';
+iframe.style.height = '360px';
+iframe.style.border = '0px';
+iframe.src = [ 'https://www.scale-it.org'].join( '' );
+div.appendChild( iframe );
+
+var object = new THREE.CSS3DObject( div );
+object.position.set( x, y, z );
+// object.scale.set( 0.01,0.01,0.01);
+object.rotation.y = ry;
+// object.rotation.y = 90;
+
+return iframe;
+
+};
 
 
 var Element = function ( id, x, y, z, ry ) {
@@ -204,6 +226,7 @@ var Element = function ( id, x, y, z, ry ) {
 	iframe.style.border = '0px';
 	iframe.src = [ 'https://www.scale-it.org'].join( '' );
 	div.appendChild( iframe );
+	// div.id = "css_object"
 
 	var object = new THREE.CSS3DObject( div );
 	object.position.set( x, y, z );
@@ -217,6 +240,7 @@ var Element = function ( id, x, y, z, ry ) {
 
 var css_renderer, css_scene;
 var base_material;
+var css_object;
 var scene, renderer; 
 var keyboard, camera, clock, deltaTime, totalTime;
 var controls;
@@ -299,6 +323,48 @@ function initialize()
 		if ( arToolkitContext.arController !== null )
 		{
 			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
+
+
+arToolkitContext.arController.addEventListener("getMarker",function(event) {
+	
+    if (event.data.marker.id === 10) {
+		console.log('test marker',event.data.marker)
+        var d = [
+            event.data.marker.vertex[(4 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(4 - event.data.marker.dir) % 4][1],1,
+            event.data.marker.vertex[(5 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(5 - event.data.marker.dir) % 4][1],1,
+            event.data.marker.vertex[(7 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(7 - event.data.marker.dir) % 4][1],1
+        ];
+
+        var v = apply(adjugate(d),[event.data.marker.vertex[(6 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(6 - event.data.marker.dir) % 4][1],1]);
+
+        d = multiply(d,[
+            v[0],0,0,
+            0,v[1],0,
+            0,0,v[2]
+        ]);
+
+        var t = multiply(d,adjugate(s));
+
+        for (i = 0; i < 9; ++i) {
+            t[i] = t[i] / t[8];
+            t[i] = Math.abs(t[i]) < Number.EPSILON ? 0 : t[i];
+        }
+
+        t = [
+            t[0],t[1],0,t[2],
+            t[3],t[4],0,t[5],
+            0,0,1,0,
+            t[6],t[7],0,t[8]
+        ];
+
+		iframe.style.transform = "matrix3d(" + t.join(", ") + ")";
+		// iframe.hidden = false;
+
+    } else {
+		// iframe.hidden = true;
+        // mesh.visible = false;
+    }
+});
 		}	
 	}
 
@@ -330,20 +396,35 @@ function initialize()
 		document.getElementsByTagName('canvas')[0].setAttribute('style','position:relative');
 	// document.body.appendChild( css_renderer.domElement );
 	});
-/*
-	document.addEventListener('mousedown', function(evt){
-		event.preventDefault()
-		onDocumentMouseMove(evt);
-	});
 
-	document.addEventListener('mousemove', function(evt){
-		onDocumentMouseMove(evt);
-	});
-*/
+	
+
+	// document.addEventListener('mousedown', function(evt){
+	// 	console.log('css_object',css_object)
+	// 	console.log('arToolkitContext',arToolkitContext)
+	// 	console.log('arToolkitSource',arToolkitSource)
+	// 	evt.preventDefault()
+	// 	onDocumentMouseMove(evt);
+	// });
+
+	// document.addEventListener('mousemove', function(evt){
+	// 	console.log('css_object',css_object)
+	// 	console.log('arToolkitContext',arToolkitContext)
+	// 	console.log('arToolkitSource',arToolkitSource)
+	// 	onDocumentMouseMove(evt);
+
+	// });
+
 
 	window.addEventListener('touchstart', function(evt)
 	{
-		event.preventDefault();
+		evt.preventDefault();
+		console.log('css_object',css_object)
+		console.log('arToolkitContext',arToolkitContext)
+		console.log('arToolkitSource',arToolkitSource)
+		// console.log('arToolkitContext',arToo)
+	
+
 		onDocumentMouseMove(evt);
 	}
 	)
@@ -469,25 +550,29 @@ function initialize()
 					scene.add(cube);
 
 
-					let group = new THREE.Group();
-					let object = new Element( 'SJOz3qjfQXU', 0,0,0, 0 );
-					// object.position.set();
-					object.name = 'iframe-scale';
-					group.add(object);   
-					group.scale.set(5,5,5)
-					group.position.set(0,0,-10000)  
-					// group.position.set(cube.position)
-					markerRootCSS.add(group)
+					// let group = new THREE.Group();
+					// let object = new Element( 'SJOz3qjfQXU', 0,0,0, 0 );
+					// // object.position.set();
+					// css_object = object;
+					// object.name = 'iframe-scale';
+					// group.add(object);   
+					// // group.scale.set(5,5,5)
+					// // group.position.set(0,0,-10000)  
+					// // group.position.set(cube.position)
+					// // markerRootCSS.add(group)
+					// markerRoot.add(group);
 					
-					console.log('scene',css_scene,scene)
+					// console.log('scene',css_scene,scene)
 
 
-					let geometry = new THREE.PlaneGeometry(100, 100);
-					let mesh = new THREE.Mesh(geometry, base_material);
-					mesh.position.copy(object.position);
-					mesh.rotation.copy(object.rotation);
-					mesh.scale.copy(object.scale);
-					scene.add(mesh);
+					// let geometry = new THREE.PlaneGeometry(100, 100);
+					// let mesh = new THREE.Mesh(geometry, base_material);
+					// mesh.position.copy(object.position);
+					// mesh.rotation.copy(object.rotation);
+					// mesh.scale.copy(object.scale);
+					// scene.add(mesh);
+					// markerRoot1 = markerRoot;
+					// markerRoot2 = markerRootCSS;
 					// sceneCss.add(markerRootCSS);
 				// markerRoot.add(new Element( 'SJOz3qjfQXU', 0, 0, 240, 90 ) );
 			
@@ -588,15 +673,114 @@ function initialize()
 
 }
 
+function adjugate(m) { // Compute the adjugate of m
+    return [
+        m[4]*m[8]-m[7]*m[5],m[7]*m[2]-m[1]*m[8],m[1]*m[5]-m[4]*m[2],
+        m[6]*m[5]-m[3]*m[8],m[0]*m[8]-m[6]*m[2],m[3]*m[2]-m[0]*m[5],
+        m[3]*m[7]-m[6]*m[4],m[6]*m[1]-m[0]*m[7],m[0]*m[4]-m[3]*m[1]
+    ];
+}
 
+function multiply(a,b) { // multiply two matrices
+    a = [
+        a[0],a[3],a[6],
+        a[1],a[4],a[7],
+        a[2],a[5],a[8]
+    ];
+
+    b = [
+        b[0],b[3],b[6],
+        b[1],b[4],b[7],
+        b[2],b[5],b[8]
+    ];
+
+    var m = Array(9);
+
+    for (var i = 0; i != 3; ++i) {
+        for (var j = 0; j != 3; ++j) {
+            var mij = 0;
+            for (var k = 0; k != 3; ++k) {
+                mij += a[3*i + k]*b[3*k + j];
+            }
+            m[3*i + j] = mij;
+        }
+    }
+
+    return [
+        m[0],m[3],m[6],
+        m[1],m[4],m[7],
+        m[2],m[5],m[8]
+    ];
+}
+
+function apply(m,v) { // multiply matrix and vector
+    return [
+        m[0]*v[0] + m[3]*v[1] + m[6]*v[2],
+        m[1]*v[0] + m[4]*v[1] + m[7]*v[2],
+        m[2]*v[0] + m[5]*v[1] + m[8]*v[2]
+    ];
+}
+
+//
+
+// var iframe = document.createElement("iframe");
+// iframe.src = "data/index.html";
+// iframe.style.position = "absolute";
+// iframe.style.left = "0";
+// iframe.style.top = "0";
+// iframe.style.transformOrigin = "0 0";
+
+// document.querySelector("main").appendChild(iframe);
+var iframe = document.createElement("iframe");
+iframe.src = "https://www.scale-it.org";
+iframe.style.position = "absolute";
+iframe.style.width = '480px';
+iframe.style.height = '360px';
+iframe.style.left = "0";
+iframe.style.top = "0";
+iframe.style.transformOrigin = "0 0";
+iframe.style.rotate = "45 0"
+iframe.offsetTop = -300
+iframe.offsetLeft = -40
+// iframe.hidden = true
+
+
+document.body.appendChild(iframe);
+
+var s = [
+    0,0,1,
+    iframe.offsetWidth,0,1,
+    0,iframe.offsetHeight,1
+];
+
+var v = apply(adjugate(s),[iframe.offsetWidth,iframe.offsetHeight,1]);
+
+s = multiply(s,[
+    v[0], 0, 0,
+    0, v[1], 0,
+    0, 0, v[2]
+]);
+
+
+var lookAt = new THREE.Vector3(0, 0, 0);
 
 function update()
 {
+
 
 	controls.update();
 	if ( arToolkitSource.ready !== false )
 	{
 		arToolkitContext.update( arToolkitSource.domElement );
+		// markerRoot2.position = markerRoot1.position;
+
+		// scene.updateMatrixWorld()
+		// console.log(css_object)
+
+
+		// lookAt.setFromMatrixPosition(css_object.matrixWorld)
+		// css_object.matrixWorld = markerRoot1.matrixWorld
+		// camera.lookAt(lookAt);
 		
 		// arToolkitContext.update( css_scene);	
 	}

@@ -1,18 +1,24 @@
 # Shopfloor Augmented Reality App
+
 Augmented Reality Shop-floor App built using [AR.js](https://github.com/jeromeetienne/AR.js/blob/master/README.md)
 
 # Add a new marker with model
+
 * Models can be found for example [at google poly](https://poly.google.com). Right now only OBJ format is suported.
-* Makers can be generated/trained here https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html
+* Makers can be generated/trained [here](https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html)
   * The best image ratio seems to be ~7x5
   * If QR codes are added they have to be inversely transformed (stretched along the y axis) because the generator mapps the input image on a square
   * Download the image (to use as a marker) and the pattern to put in the 
   
   
+  
 # File Structure
+
 * Markers can be found and placed at the following path [https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/marker](https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/marker)
 * Marker Patterns can be found and placed at the following path [https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/patterns](https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/patterns)
 * Models(OBJ and MTL file for each OBJ model) can be found and placed at the following path [https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/models](https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/models)
+
+
 
 # Local Testing
 ## How to Run the app Locally
@@ -27,6 +33,7 @@ After that, serve the files using a static http server. I use a simple command l
 to start the http-server, simply run:
 
 `$ http-server`
+
 
 ## Can’t access user media error
 
@@ -46,6 +53,8 @@ You then run the server with the -S to enable SSL and -C for your certificate fi
 * Clicking on a model will replace the model by its linked web-app page and a navigation button
 * A click on the navigation button will openb the linked web-app
 * And a click on the web-app page will go back to the first state with only showing the model
+
+* To test the application open the [app](https://matthiasschedel.github.io/shopfloor_ar/app/) and hold the camera to view one of the 2 markers shown below.
 
 ## Markers
 ### Marker 1

@@ -19,6 +19,62 @@
 	<script src="threex/threex-artoolkitcontext.js"></script>
 	<script src="threex/threex-arbasecontrols.js"></script>
 	<script src="threex/threex-armarkercontrols.js"></script>
+	<style>
+			body {
+			  font-family: 'Lato', sans-serif;
+			}
+			
+			.overlay {
+			  height: 0%;
+			  width: 100%;
+			  position: fixed;
+			  z-index: 1;
+			  top: 0;
+			  left: 0;
+			  background-color: rgb(0,0,0);
+			  background-color: rgba(0,0,0, 0.9);
+			  overflow-y: hidden;
+			  transition: 0.5s;
+			}
+			
+			.overlay-content {
+			  position: relative;
+			  top: 25%;
+			  width: 100%;
+			  text-align: center;
+			  margin-top: 30px;
+			}
+			
+			.overlay a {
+			  padding: 8px;
+			  text-decoration: none;
+			  font-size: 36px;
+			  color: #818181;
+			  display: block;
+			  transition: 0.3s;
+			}
+			
+			.overlay a:hover, .overlay a:focus {
+			  color: #f1f1f1;
+			}
+			
+			.overlay .closebtn {
+			  position: absolute;
+			  top: -10px;
+			  right: 0px;
+			  font-size: 60px;
+			}
+			
+			@media screen and (max-height: 450px) {
+			  .overlay {overflow-y: auto;}
+			  .overlay a {font-size: 20px}
+			  .overlay .closebtn {
+			  font-size: 40px;
+			  top: 2px;
+			  right: 5px;
+			  }
+			}
+			</style>
 </head>
 
 <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
@@ -28,7 +84,95 @@
   Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
 -->
 
+	
+	<div id="myNav" class="overlay">
+	  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	  <div class="overlay-content; text-align:left;">
+		<span style="display:block"> 
+			<h2 style="color:#f1f1f1" > Set robot_arm_url </h2>
+			<input style="min-width: 85%" type="text" value="..." name="text" id="robot_arm_url" maxlength="1000">
+			<!-- <label style="color:#f1f1f1" for="text">robot_arm_url</label> -->
+			<button onclick="setUrl('robot_arm_url')">Set</button>
+		</span>
+		<span style="display:block"> </span>
+		<span style="display:block"> 
+			<h2 style="color:#f1f1f1" > Set model_url </h2>
+			<input style="min-width: 85%"value="..." type="text" name="text" id="model_url" maxlength="1000">
+			<!-- <label style="color:#f1f1f1" for="text">model_url</label> -->
+			<button onclick="setUrl('model_url')">Set</button>
+		</span>
+	  </div>
+	</div>
+	<span style="margin-top: 1px; margin-left: 2px; font-size:30px;cursor:pointer;" onclick="openNav()">  &#9881; Settings</span>
+	
+
+
+
+	<script>
+	var model_url = "https://scale-it.org/de/";
+	var robot_arm_url =  "https://scale-it.org/de/Inspektionsdaten_aus_der_Produktion.html";
+	document.getElementById('robot_arm_url').setAttribute('value',robot_arm_url);
+	document.getElementById('model_url').setAttribute('value',model_url);
+
+
+	
+	function setUrl(url)
+	{
+		switch(url) {
+			case "model_url" :
+			model_url = document.getElementById('model_url').getAttribute('value');
+			// console.log('value model',model_url, document.getElementById('model_url'))
+			break;
+
+			case "robot_arm_url":
+			robot_arm_url = document.getElementById('robot_arm_url').getAttribute('value');
+			// console.log('value robot',robot_arm_url, document.getElementById('model_url'))
+
+			break;
+
+
+			default:
+			break;
+
+
+		}
+
+	}
+
+	function openNav() {
+	  console.log('open')
+	  document.getElementById("myNav").style.height = "100%";
+	}
+	
+	function closeNav() {
+	  document.getElementById("myNav").style.height = "0%";
+	}
+	</script>
+		 
+
 <script>
+
+var models = {
+	'robot_arm':
+	{
+		url:"",
+		image_path:"",
+		model_path:{
+			mtl_path:"",
+			obj_path:""
+		}
+	} ,
+	'machine':{
+		url:"",
+		image_path:"",
+		model_path:{
+			mtl_path:"",
+			obj_path:""
+		}	
+	}
+}
+
+
 var scene, keyboard, camera, renderer, clock, deltaTime, totalTime;
 var objects = []
 var models_dict = []
@@ -53,6 +197,7 @@ function initialize()
 		antialias : true,
 		alpha: true
 	});
+	
 	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
 	renderer.setSize( 640, 480 );
 	renderer.domElement.style.position = 'absolute'
@@ -67,7 +212,7 @@ function initialize()
 	////////////////////////////////////////////////////////////
 	// setup arToolkitSource
 	////////////////////////////////////////////////////////////
-
+ 
 	arToolkitSource = new THREEx.ArToolkitSource({
 		sourceType : 'webcam'
 	});
@@ -106,6 +251,7 @@ function initialize()
 	// copy projection matrix to camera when initialization complete
 	arToolkitContext.init( function onCompleted(){
 		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+		document.getElementsByTagName('canvas')[0].setAttribute('style','position:relative');
 	});
 /*
 	document.addEventListener('mousedown', function(evt){
@@ -380,7 +526,7 @@ var doObject = function(o)
 			case "machine_open":
 			console.log('open machine')
 			// if (o.object.visible)	
-			window.location.href = "https://scale-it.org/de/Inspektionsdaten_aus_der_Produktion.html";
+			window.location.href = robot_arm_url;
 			break;
 
 			case "machine_base":
@@ -412,7 +558,7 @@ var doObject = function(o)
 			case "product_open":
 			console.log('open product')
 			// if (o.object.visible)	
-			window.location.href = "https://scale-it.org/de/";
+			window.location.href = model_url;
 			break;
 			case "product_base":
 			o.object.parent.children[1].visible = !o.object.parent.children[1].visible

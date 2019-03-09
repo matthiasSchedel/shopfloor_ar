@@ -5,6 +5,10 @@
 
 	<!-- include three.js library -->
 	<script src='js/three.js'></script>
+
+	<script src="js/controls/TrackballControls.js"></script>
+	<script src="js/renderers/CSS3DRenderer.js"></script>
+
 	<script src='js/OBJLoader.js'></script>
 	<script src='js/MTLLoader.js'></script>
 
@@ -20,6 +24,18 @@
 	<script src="threex/threex-arbasecontrols.js"></script>
 	<script src="threex/threex-armarkercontrols.js"></script>
 	<style>
+			html, body {
+				height: 100%;
+				overflow: hidden;
+			}
+			#blocker {
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				height: 100%;
+			}
+
 			body {
 			  font-family: 'Lato', sans-serif;
 			}
@@ -150,7 +166,7 @@
 	</script>
 		 
 
-<script>
+<script>	
 
 var models = {
 	'robot_arm':
@@ -173,7 +189,37 @@ var models = {
 }
 
 
-var scene, keyboard, camera, renderer, clock, deltaTime, totalTime;
+
+
+var Element = function ( id, x, y, z, ry ) {
+
+	var div = document.createElement( 'div' );
+	div.style.width = '480px';
+	div.style.height = '360px';
+	div.style.backgroundColor = '#000';
+
+	var iframe = document.createElement( 'iframe' );
+	iframe.style.width = '480px';
+	iframe.style.height = '360px';
+	iframe.style.border = '0px';
+	iframe.src = [ 'https://www.scale-it.org'].join( '' );
+	div.appendChild( iframe );
+
+	var object = new THREE.CSS3DObject( div );
+	object.position.set( x, y, z );
+	// object.scale.set( 0.01,0.01,0.01);
+	object.rotation.y = ry;
+	// object.rotation.y = 90;
+
+	return object;
+
+};
+
+var css_renderer, css_scene;
+var base_material;
+var scene, renderer; 
+var keyboard, camera, clock, deltaTime, totalTime;
+var controls;
 var objects = []
 var models_dict = []
 var arToolkitSource, arToolkitContext;
@@ -187,24 +233,52 @@ animate();
 function initialize()
 {
 	scene = new THREE.Scene();
+	css_scene = new THREE.Scene();
+
+	base_material = new THREE.MeshBasicMaterial({
+        color: 0x000008,
+        opacity: 0.1,
+        side: THREE.DoubleSide
+    });
+	
 	let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.5 );
 	scene.add( ambientLight );
 				
+	// camera = new THREE.PerspectiveCamera();
 	camera = new THREE.PerspectiveCamera();
-	scene.add(camera);
+	// camera.position.set(0,0,-100)
+	// scene.add(camera);
+	//s_scene.add(camera)x
+	// camera.lookAt(scene)
+	
 
+	css_renderer = new THREE.CSS3DRenderer();
+    css_renderer.setSize(window.innerWidth, window.innerHeight);
+    css_renderer.domElement.style.position = 'absolute';
+	css_renderer.domElement.style.top = 0;
 	renderer = new THREE.WebGLRenderer({
 		antialias : true,
 		alpha: true
 	});
+	renderer.setClearColor(0x00ff00, 0.0);
+	renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.zIndex = -100;
+	renderer.domElement.style.top = 0
+	document.body.appendChild(css_renderer.domElement);
+	document.body.appendChild(renderer.domElement);
+	// document.body.appendChild(renderer.domElement);
+
+	controls = new THREE.TrackballControls( camera );
+	controls.rotateSpeed = 4;
 	
-	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+	renderer.setClearColor(new THREE.Color(0x0000000), 0)
 	renderer.setSize( 640, 480 );
 	renderer.domElement.style.position = 'absolute'
 	renderer.domElement.style.top = '0px'
 	renderer.domElement.style.left = '0px'
-	document.body.appendChild( renderer.domElement );
+	// document.body.appendChild( renderer.domElement );
 
+	console.log('css stuff',css_renderer, camera)
 	clock = new THREE.Clock();
 	deltaTime = 0;
 	totalTime = 0;
@@ -221,6 +295,7 @@ function initialize()
 	{
 		arToolkitSource.onResize()	
 		arToolkitSource.copySizeTo(renderer.domElement)	
+		// arToolkitSource.copySizeTo(css_renderer.domElement)		
 		if ( arToolkitContext.arController !== null )
 		{
 			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
@@ -235,6 +310,7 @@ function initialize()
 	window.addEventListener('resize', function(){
 		onResize()
 	});
+	
 
 
 	
@@ -252,6 +328,7 @@ function initialize()
 	arToolkitContext.init( function onCompleted(){
 		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
 		document.getElementsByTagName('canvas')[0].setAttribute('style','position:relative');
+	// document.body.appendChild( css_renderer.domElement );
 	});
 /*
 	document.addEventListener('mousedown', function(evt){
@@ -263,6 +340,7 @@ function initialize()
 		onDocumentMouseMove(evt);
 	});
 */
+
 	window.addEventListener('touchstart', function(evt)
 	{
 		event.preventDefault();
@@ -281,13 +359,28 @@ function initialize()
 	for (let i = 0; i < 7; i++)
 	{
 		let markerRoot = new THREE.Group();
+		let markerRootCSS = new THREE.Group();
 		scene.add(markerRoot);
+		css_scene.add(markerRootCSS);
 		let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+			type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
+		});
+		let markerControlsCss = new THREEx.ArMarkerControls(arToolkitContext, markerRootCSS, {
 			type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
 		});
 		
 		switch(i) {
 			case 5:
+	
+
+
+			// var geometry = new THREE.PlaneGeometry(1, 1);
+			// var mesh = new THREE.Mesh(geometry, base_material);
+			// mesh.position.copy(object.position);
+			// mesh.rotation.copy(object.rotation);
+			// mesh.scale.copy(object.scale);
+			// markerRoot.add(mesh);
+
 			let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
 			let materialx = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.0 } );
 				mesh6 = new THREE.Mesh( geometry1, materialx );
@@ -360,6 +453,43 @@ function initialize()
 								markerRoot.add(mesh0);
 							}, onProgress, onError );
 					});
+
+					var boxGeom = new THREE.CubeGeometry(60, 60, 60);
+
+					var cubeMaterial = new THREE.MeshBasicMaterial({
+						color: 0x05009A,
+						shading: THREE.FlatShading,
+						side: THREE.DoubleSide
+					});
+
+					var cube = new THREE.Mesh(boxGeom, cubeMaterial);
+					cube.position.copy(new THREE.Vector3(100, 75, 50));
+					cube.rotation.copy(Math.PI / 6);
+
+					scene.add(cube);
+
+
+					let group = new THREE.Group();
+					let object = new Element( 'SJOz3qjfQXU', 0,0,0, 0 );
+					// object.position.set();
+					object.name = 'iframe-scale';
+					group.add(object);   
+					group.scale.set(5,5,5)
+					group.position.set(0,0,-10000)  
+					// group.position.set(cube.position)
+					markerRootCSS.add(group)
+					
+					console.log('scene',css_scene,scene)
+
+
+					let geometry = new THREE.PlaneGeometry(100, 100);
+					let mesh = new THREE.Mesh(geometry, base_material);
+					mesh.position.copy(object.position);
+					mesh.rotation.copy(object.rotation);
+					mesh.scale.copy(object.scale);
+					scene.add(mesh);
+					// sceneCss.add(markerRootCSS);
+				// markerRoot.add(new Element( 'SJOz3qjfQXU', 0, 0, 240, 90 ) );
 			
 			break;
 
@@ -453,19 +583,32 @@ function initialize()
 			// markerRoot.add( mesh );
 		}
 	}
+
+
+
 }
+
 
 
 function update()
 {
 
+	controls.update();
 	if ( arToolkitSource.ready !== false )
+	{
 		arToolkitContext.update( arToolkitSource.domElement );
+		
+		// arToolkitContext.update( css_scene);	
+	}
+
 }
 
 function render()
 {
+	css_renderer.render( css_scene, camera )
 	renderer.render( scene, camera );
+	// rendererCss.render(sceneCss, camera);
+	
 }
 
 function animate()

@@ -8,7 +8,7 @@ Augmented Reality Shop-floor App built using [AR.js](https://github.com/jeromeet
 * Makers can be generated/trained [here](https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html)
   * The best image ratio seems to be ~7x5
   * If QR codes are added they have to be inversely transformed (stretched along the y axis) because the generator mapps the input image on a square
-  * Download the image (to use as a marker) and the pattern to put in the 
+  * Download the image (to use as a marker) and the marker pattern and place both of them in their respective paths (see File Structure). 
   
   
   
@@ -17,6 +17,7 @@ Augmented Reality Shop-floor App built using [AR.js](https://github.com/jeromeet
 * Markers can be found and placed at the following path [https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/marker](https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/marker)
 * Marker Patterns can be found and placed at the following path [https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/patterns](https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/patterns)
 * Models(OBJ and MTL file for each OBJ model) can be found and placed at the following path [https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/models](https://github.com/matthiasSchedel/shopfloor_ar/tree/master/app/data/models)
+* [Handle click events on ar/three js objects](https://medium.com/chialab-open-source/how-to-handle-click-events-on-ar-js-58fcacb77c4)
 
 
 
@@ -64,6 +65,20 @@ You then run the server with the -S to enable SSL and -C for your certificate fi
 ### Marker 2
 ![Robot Arm Marker](https://github.com/matthiasSchedel/shopfloor_ar/raw/master/app/data/marker/robot-arm_marker.png)
 
+# Ressources for development and examples
+* [AR Examples from offical AR doc](https://jeromeetienne.github.io/AR.js-docs/misc/EXAMPLES.html)
+* [More AR examples by stemkoski](https://github.com/stemkoski/AR-Examples)
+* [Three.js examples](https://threejs.org/examples/)
+* [Three.js documentation](https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene)#
+* [ARFRAME Entity component example](https://medium.com/@jochasinga/entity-component-system-ecs-in-a-frame-and-javascript-f5b7cdba7248)
+
+# Screenshots:
+* Coming soon ...
+
+
+
 # Using docker
 
 * Coming soon ...
+
+

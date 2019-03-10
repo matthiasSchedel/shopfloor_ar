@@ -27,6 +27,9 @@
 			html, body {
 				height: 100%;
 				overflow: hidden;
+				margin : 0px; 
+				/* font-family: Monospace; */
+				font-family: 'Lato', sans-serif;
 			}
 			#blocker {
 				position: absolute;
@@ -35,11 +38,9 @@
 				width: 100%;
 				height: 100%;
 			}
-
-			body {
-			  font-family: 'Lato', sans-serif;
+			#myNav {
+				/* z-index:1; */
 			}
-			
 			.overlay {
 			  height: 0%;
 			  width: 100%;
@@ -52,6 +53,9 @@
 			  overflow-y: hidden;
 			  transition: 0.5s;
 			}
+			iframe {
+				z-index: 0;
+			}
 			
 			.overlay-content {
 			  position: relative;
@@ -60,7 +64,21 @@
 			  text-align: center;
 			  margin-top: 30px;
 			}
-			
+
+
+			.openNav {
+				margin-top: 1px; 
+				margin-left: 2px; 
+				font-size:30px;
+				cursor:pointer;
+			}
+			input {
+				z-index: 1;
+			}
+			button {
+				cursor:pointer;
+				z-index: 1;
+			}	
 			.overlay a {
 			  padding: 8px;
 			  text-decoration: none;
@@ -93,79 +111,74 @@
 			</style>
 </head>
 
-<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
+<body>
 
 <!-- 
   AR App created by Matthias Schedel
   Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
 -->
-
-	
 	<div id="myNav" class="overlay">
 	  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 	  <div class="overlay-content; text-align:left;">
 		<span style="display:block"> 
 			<h2 style="color:#f1f1f1" > Set robot_arm_url </h2>
 			<input style="min-width: 85%" type="text" value="..." name="text" id="robot_arm_url" maxlength="1000">
-			<!-- <label style="color:#f1f1f1" for="text">robot_arm_url</label> -->
 			<button onclick="setUrl('robot_arm_url')">Set</button>
 		</span>
 		<span style="display:block"> </span>
 		<span style="display:block"> 
 			<h2 style="color:#f1f1f1" > Set model_url </h2>
 			<input style="min-width: 85%"value="..." type="text" name="text" id="model_url" maxlength="1000">
-			<!-- <label style="color:#f1f1f1" for="text">model_url</label> -->
 			<button onclick="setUrl('model_url')">Set</button>
 		</span>
 	  </div>
 	</div>
-	<span style="margin-top: 1px; margin-left: 2px; font-size:30px;cursor:pointer;" onclick="openNav()">  &#9881; Settings</span>
-	
-
-
+	<span class="openNav" onclick="openNav()">  &#9881; Settings</span>
 
 	<script>
+		window.oncontextmenu = null;
 	var model_url = "https://scale-it.org/de/";
-	var robot_arm_url =  "https://scale-it.org/de/Inspektionsdaten_aus_der_Produktion.html";
-	document.getElementById('robot_arm_url').setAttribute('value',robot_arm_url);
-	document.getElementById('model_url').setAttribute('value',model_url);
-
-
+	var robot_arm_url =  "https://scale-it.org/de/708/veranstaltung-scaleit-industrielle-apps-fuer-die-produktion-im-mittelstand-am-14-maerz-2019-in-stuttgart.html";
+	document.addEventListener('loadend',e => {
+			if (localStorage.getItem('robot_arm_url') !== null) {
+				robot_arm_url = localStorage.getItem('robot_arm_url');	
+			}
+			if (localStorage.getItem('model_url') !== null) {
+				model_url = localStorage.getItem('model_url');	
+			}
+			document.getElementById('robot_arm_url').setAttribute('value',robot_arm_url);
+			document.getElementById('model_url').setAttribute('value',model_url);
+	}
+	)
+	
 	
 	function setUrl(url)
 	{
+		console.log('set url')
 		switch(url) {
 			case "model_url" :
-			model_url = document.getElementById('model_url').getAttribute('value');
-			// console.log('value model',model_url, document.getElementById('model_url'))
-			break;
-
+				model_url = document.getElementById('model_url').getAttribute('value');
+				localStorage.setItem('model_url',model_url)
+				break;
 			case "robot_arm_url":
-			robot_arm_url = document.getElementById('robot_arm_url').getAttribute('value');
-			// console.log('value robot',robot_arm_url, document.getElementById('model_url'))
-
-			break;
-
-
+				robot_arm_url = document.getElementById('robot_arm_url').getAttribute('value');
+				localStorage.setItem('robot_arm_url',robot_arm_url)
+				break;
 			default:
-			break;
-
-
+				break;
 		}
-
 	}
 
 	function openNav() {
-	  console.log('open')
-	  document.getElementById("myNav").style.height = "100%";
+		window.location.href = "Options.html"
+	  // console.log('open')
+	  // document.getElementById("myNav").style.height = "100%";
 	}
 	
 	function closeNav() {
 	  document.getElementById("myNav").style.height = "0%";
 	}
 	</script>
-		 
-
 <script>	
 
 var models = {
@@ -187,56 +200,6 @@ var models = {
 		}	
 	}
 }
-
-var ElementIframe = function ( id, x, y, z, ry ) {
-
-var div = document.createElement( 'div' );
-div.style.width = '480px';
-div.style.height = '360px';
-div.style.backgroundColor = '#000';
-
-var iframe = document.createElement( 'iframe' );
-iframe.style.width = '480px';
-iframe.style.height = '360px';
-iframe.style.border = '0px';
-iframe.src = [ 'https://www.scale-it.org'].join( '' );
-div.appendChild( iframe );
-
-var object = new THREE.CSS3DObject( div );
-object.position.set( x, y, z );
-// object.scale.set( 0.01,0.01,0.01);
-object.rotation.y = ry;
-// object.rotation.y = 90;
-
-return iframe;
-
-};
-
-
-var Element = function ( id, x, y, z, ry ) {
-
-	var div = document.createElement( 'div' );
-	div.style.width = '480px';
-	div.style.height = '360px';
-	div.style.backgroundColor = '#000';
-
-	var iframe = document.createElement( 'iframe' );
-	iframe.style.width = '480px';
-	iframe.style.height = '360px';
-	iframe.style.border = '0px';
-	iframe.src = [ 'https://www.scale-it.org'].join( '' );
-	div.appendChild( iframe );
-	// div.id = "css_object"
-
-	var object = new THREE.CSS3DObject( div );
-	object.position.set( x, y, z );
-	// object.scale.set( 0.01,0.01,0.01);
-	object.rotation.y = ry;
-	// object.rotation.y = 90;
-
-	return object;
-
-};
 
 var css_renderer, css_scene;
 var base_material;
@@ -268,13 +231,7 @@ function initialize()
 	let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.5 );
 	scene.add( ambientLight );
 				
-	// camera = new THREE.PerspectiveCamera();
 	camera = new THREE.PerspectiveCamera();
-	// camera.position.set(0,0,-100)
-	// scene.add(camera);
-	//s_scene.add(camera)x
-	// camera.lookAt(scene)
-	
 
 	css_renderer = new THREE.CSS3DRenderer();
     css_renderer.setSize(window.innerWidth, window.innerHeight);
@@ -288,7 +245,7 @@ function initialize()
 	renderer.domElement.style.position = 'absolute';
     renderer.domElement.style.zIndex = -100;
 	renderer.domElement.style.top = 0
-	document.body.appendChild(css_renderer.domElement);
+	// document.body.appendChild(css_renderer.domElement);
 	document.body.appendChild(renderer.domElement);
 	// document.body.appendChild(renderer.domElement);
 
@@ -315,6 +272,8 @@ function initialize()
 		sourceType : 'webcam'
 	});
 
+var iframe_1, iframe_2;
+
 	function onResize()
 	{
 		arToolkitSource.onResize()	
@@ -324,11 +283,57 @@ function initialize()
 		{
 			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
 
-
 arToolkitContext.arController.addEventListener("getMarker",function(event) {
 	
     if (event.data.marker.id === 10) {
-		console.log('test marker',event.data.marker)
+			var s, v;
+			if (iframe_1 === undefined)
+				{
+					let url = (localStorage.getItem('robot_arm_url') ==! null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
+					url = "https://scale-it.org/de/"; 
+					iframe_1 = createIframe(url, 'robot_arm_url_iframe')
+					s = [
+							0,0,1,
+							iframe_1.offsetWidth,0,1,
+							0,iframe_1.offsetHeight,1
+					];
+
+					v = apply(adjugate(s),[iframe_1.offsetWidth,iframe_1.offsetHeight,1]);
+
+					s = multiply(s,[
+							v[0], 0, 0,
+							0, v[1], 0,
+							0, 0, v[2]
+					]);
+					document.body.appendChild(iframe_1);
+				} else 
+				{
+
+					s = [
+							0,0,1,
+							iframe_1.offsetWidth,0,1,
+							0,iframe_1.offsetHeight,1
+					];
+
+					v = apply(adjugate(s),[iframe_1.offsetWidth,iframe_1.offsetHeight,1]);
+
+					s = multiply(s,[
+							v[0], 0, 0,
+							0, v[1], 0,
+							0, 0, v[2]
+					]);	
+					
+				}
+			
+				
+			// var iframe = createIframe(robot_arm_url);
+// var iframe2 = createIframe(model_url); 
+// // iframe.hidden = true
+
+
+// document.body.appendChild(iframe);
+// document.body.appendChild(iframe2);
+		// console.log('test marker',event.data.marker)
         var d = [
             event.data.marker.vertex[(4 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(4 - event.data.marker.dir) % 4][1],1,
             event.data.marker.vertex[(5 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(5 - event.data.marker.dir) % 4][1],1,
@@ -356,11 +361,119 @@ arToolkitContext.arController.addEventListener("getMarker",function(event) {
             0,0,1,0,
             t[6],t[7],0,t[8]
         ];
+				// iframe.hidden = false;
+		// iframe.style.opacity = "80%";
 
-		iframe.style.transform = "matrix3d(" + t.join(", ") + ")";
-		// iframe.hidden = false;
+		iframe_1.style.transform = "matrix3d(" + t.join(", ") + ")";
+		
 
-    } else {
+		} 
+		if (event.data.marker.id === 12){
+			var s, v;
+			if (iframe_2 === undefined)
+			{
+				
+					let url = (localStorage.getItem('model_url') ==! null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
+					url = "https://scale-it.org/de/"; 
+					// if (document.getElementsByName('model_url_iframe') > 0)
+					// document.removeChild(document.getElementsByName('model_url_iframe')[0])
+
+					iframe_2 = createIframe(url, 'model_url_iframe')
+
+
+					s = [
+							0,0,1,
+							iframe_2.offsetWidth,0,1,
+							0,iframe_2.offsetHeight,1
+					];
+
+					v = apply(adjugate(s),[iframe_2.offsetWidth,iframe_2.offsetHeight,1]);
+
+					s = multiply(s,[
+							v[0], 0, 0,
+							0, v[1], 0,
+							0, 0, v[2]
+					]);
+					// if (document.getElementsByName('model_url_iframe') > 0)
+					// 	{ 
+					// 		document.getElementsByName('model_url_iframe')[0] = iframe_2
+					// 	}
+					// 	else {
+							document.body.appendChild(iframe_2);
+
+						} else {
+							s = [
+							0,0,1,
+							iframe_2.offsetWidth,0,1,
+							0,iframe_2.offsetHeight,1
+					];
+
+					v = apply(adjugate(s),[iframe_2.offsetWidth,iframe_2.offsetHeight,1]);
+
+					s = multiply(s,[
+							v[0], 0, 0,
+							0, v[1], 0,
+							0, 0, v[2]
+					]);
+						}
+				// } else 
+				// {
+				// 	iframe_2 = document.getElementById('robot_arm_url_iframe')
+				// 	s = [
+				// 			0,0,1,
+				// 			iframe_2.offsetWidth,0,1,
+				// 			0,iframe_2.offsetHeight,1
+				// 	];
+
+				// 	v = apply(adjugate(s),[iframe_2.offsetWidth,iframe_2.offsetHeight,1]);
+
+				// 	s = multiply(s,[
+				// 			v[0], 0, 0,
+				// 			0, v[1], 0,
+				// 			0, 0, v[2]
+				// 	]);	
+					
+				// }
+			var d = [
+            event.data.marker.vertex[(4 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(4 - event.data.marker.dir) % 4][1],1,
+            event.data.marker.vertex[(5 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(5 - event.data.marker.dir) % 4][1],1,
+            event.data.marker.vertex[(7 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(7 - event.data.marker.dir) % 4][1],1
+        ];
+
+        var v = apply(adjugate(d),[event.data.marker.vertex[(6 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(6 - event.data.marker.dir) % 4][1],1]);
+
+        d = multiply(d,[
+            v[0],0,0,
+            0,v[1],0,
+            0,0,v[2]
+        ]);
+
+        var t = multiply(d,adjugate(s));
+
+        for (i = 0; i < 9; ++i) {
+            t[i] = t[i] / t[8];
+            t[i] = Math.abs(t[i]) < Number.EPSILON ? 0 : t[i];
+        }
+
+        t = [
+            t[0],t[1],0,t[2],
+            t[3],t[4],0,t[5],
+            0,0,1,0,
+            t[6],t[7],0,t[8]
+        ];
+		// iframe2.hidden = false;
+		// iframe2.style.display = "";
+		iframe_2.style.transform = "matrix3d(" + t.join(", ") + ")";	
+		
+		// iframe.hidden = true;
+        // mesh.visible = false;
+		} 
+		if (event.data.marker.id !== 10) {
+			// console.log('marker id', event.data.marker.id);
+		// iframe.hidden = true;
+        // mesh.visible = false;
+		}
+		else {
 		// iframe.hidden = true;
         // mesh.visible = false;
     }
@@ -376,8 +489,6 @@ arToolkitContext.arController.addEventListener("getMarker",function(event) {
 	window.addEventListener('resize', function(){
 		onResize()
 	});
-	
-
 
 	
 	////////////////////////////////////////////////////////////
@@ -394,23 +505,22 @@ arToolkitContext.arController.addEventListener("getMarker",function(event) {
 	arToolkitContext.init( function onCompleted(){
 		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
 		document.getElementsByTagName('canvas')[0].setAttribute('style','position:relative');
-	// document.body.appendChild( css_renderer.domElement );
 	});
 
 	
 
-	// document.addEventListener('mousedown', function(evt){
-	// 	console.log('css_object',css_object)
-	// 	console.log('arToolkitContext',arToolkitContext)
-	// 	console.log('arToolkitSource',arToolkitSource)
-	// 	evt.preventDefault()
-	// 	onDocumentMouseMove(evt);
-	// });
+	document.addEventListener('mousedown', function(evt){
+		// console.log('css_object',css_object)
+		// console.log('arToolkitContext',arToolkitContext)
+		// console.log('arToolkitSource',arToolkitSource)
+		evt.preventDefault()
+		onDocumentMouseMove(evt);
+	});
 
 	// document.addEventListener('mousemove', function(evt){
-	// 	console.log('css_object',css_object)
-	// 	console.log('arToolkitContext',arToolkitContext)
-	// 	console.log('arToolkitSource',arToolkitSource)
+	// 	// console.log('css_object',css_object)
+	// 	// console.log('arToolkitContext',arToolkitContext)
+	// 	// console.log('arToolkitSource',arToolkitSource)
 	// 	onDocumentMouseMove(evt);
 
 	// });
@@ -440,15 +550,15 @@ arToolkitContext.arController.addEventListener("getMarker",function(event) {
 	for (let i = 0; i < 7; i++)
 	{
 		let markerRoot = new THREE.Group();
-		let markerRootCSS = new THREE.Group();
+		// let markerRootCSS = new THREE.Group();
 		scene.add(markerRoot);
-		css_scene.add(markerRootCSS);
+		// css_scene.add(markerRootCSS);
 		let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
 			type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
 		});
-		let markerControlsCss = new THREEx.ArMarkerControls(arToolkitContext, markerRootCSS, {
-			type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
-		});
+		// let markerControlsCss = new THREEx.ArMarkerControls(arToolkitContext, markerRootCSS, {
+		// 	type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
+		// });
 		
 		switch(i) {
 			case 5:
@@ -487,6 +597,7 @@ arToolkitContext.arController.addEventListener("getMarker",function(event) {
 					sprite.scale.z = .3
 					sprite.visible = false;
 					sprite.name = "machine_open"
+					
 					markerRoot.add( sprite );
 					{
 					let geometry2 = new THREE.PlaneBufferGeometry(1,1, 4,4);
@@ -533,49 +644,7 @@ arToolkitContext.arController.addEventListener("getMarker",function(event) {
 								mesh0.visible = true
 								markerRoot.add(mesh0);
 							}, onProgress, onError );
-					});
-
-					var boxGeom = new THREE.CubeGeometry(60, 60, 60);
-
-					var cubeMaterial = new THREE.MeshBasicMaterial({
-						color: 0x05009A,
-						shading: THREE.FlatShading,
-						side: THREE.DoubleSide
-					});
-
-					var cube = new THREE.Mesh(boxGeom, cubeMaterial);
-					cube.position.copy(new THREE.Vector3(100, 75, 50));
-					cube.rotation.copy(Math.PI / 6);
-
-					scene.add(cube);
-
-
-					// let group = new THREE.Group();
-					// let object = new Element( 'SJOz3qjfQXU', 0,0,0, 0 );
-					// // object.position.set();
-					// css_object = object;
-					// object.name = 'iframe-scale';
-					// group.add(object);   
-					// // group.scale.set(5,5,5)
-					// // group.position.set(0,0,-10000)  
-					// // group.position.set(cube.position)
-					// // markerRootCSS.add(group)
-					// markerRoot.add(group);
-					
-					// console.log('scene',css_scene,scene)
-
-
-					// let geometry = new THREE.PlaneGeometry(100, 100);
-					// let mesh = new THREE.Mesh(geometry, base_material);
-					// mesh.position.copy(object.position);
-					// mesh.rotation.copy(object.rotation);
-					// mesh.scale.copy(object.scale);
-					// scene.add(mesh);
-					// markerRoot1 = markerRoot;
-					// markerRoot2 = markerRootCSS;
-					// sceneCss.add(markerRootCSS);
-				// markerRoot.add(new Element( 'SJOz3qjfQXU', 0, 0, 240, 90 ) );
-			
+					});			
 			break;
 
 			case 6:
@@ -721,68 +790,47 @@ function apply(m,v) { // multiply matrix and vector
     ];
 }
 
-//
+var createIframe = function(url, id) {
+	let iframe = document.createElement("iframe");
+	iframe.src = url;
+	iframe.style.position = "absolute";
+	iframe.style.width = '480px';
+	iframe.style.height = '360px';
+	iframe.style.left = "0";
+	iframe.style.top = "0";
+	iframe.style.transformOrigin = "0 0";
+	iframe.style.rotate = "45 0"
+	iframe.offsetTop = -300
+	iframe.offsetLeft = -40
+	iframe.id = id
 
-// var iframe = document.createElement("iframe");
-// iframe.src = "data/index.html";
-// iframe.style.position = "absolute";
-// iframe.style.left = "0";
-// iframe.style.top = "0";
-// iframe.style.transformOrigin = "0 0";
+	iframe.style.width = '480px';
+	iframe.style.height = '360px';
+	
+	// iframe.style.display = "none";
+	// iframe.style.opacity = "100%";
+	return iframe;
+}
 
-// document.querySelector("main").appendChild(iframe);
-var iframe = document.createElement("iframe");
-iframe.src = "https://www.scale-it.org";
-iframe.style.position = "absolute";
-iframe.style.width = '480px';
-iframe.style.height = '360px';
-iframe.style.left = "0";
-iframe.style.top = "0";
-iframe.style.transformOrigin = "0 0";
-iframe.style.rotate = "45 0"
-iframe.offsetTop = -300
-iframe.offsetLeft = -40
-// iframe.hidden = true
+// var iframe = createIframe(robot_arm_url);
+// var iframe2 = createIframe(model_url); 
+// // iframe.hidden = true
 
 
-document.body.appendChild(iframe);
+// document.body.appendChild(iframe);
+// document.body.appendChild(iframe2);
 
-var s = [
-    0,0,1,
-    iframe.offsetWidth,0,1,
-    0,iframe.offsetHeight,1
-];
 
-var v = apply(adjugate(s),[iframe.offsetWidth,iframe.offsetHeight,1]);
-
-s = multiply(s,[
-    v[0], 0, 0,
-    0, v[1], 0,
-    0, 0, v[2]
-]);
 
 
 var lookAt = new THREE.Vector3(0, 0, 0);
 
 function update()
 {
-
-
 	controls.update();
 	if ( arToolkitSource.ready !== false )
 	{
 		arToolkitContext.update( arToolkitSource.domElement );
-		// markerRoot2.position = markerRoot1.position;
-
-		// scene.updateMatrixWorld()
-		// console.log(css_object)
-
-
-		// lookAt.setFromMatrixPosition(css_object.matrixWorld)
-		// css_object.matrixWorld = markerRoot1.matrixWorld
-		// camera.lookAt(lookAt);
-		
-		// arToolkitContext.update( css_scene);	
 	}
 
 }
@@ -791,8 +839,6 @@ function render()
 {
 	css_renderer.render( css_scene, camera )
 	renderer.render( scene, camera );
-	// rendererCss.render(sceneCss, camera);
-	
 }
 
 function animate()
@@ -801,21 +847,14 @@ function animate()
 	deltaTime = clock.getDelta();
 	totalTime += deltaTime;
 	if (doRotate) {
-		// if (scene.children[7] !== undefined && scene.children[7].children[1] !== undefined)
-		// scene.children[7].children[1].rotation.y += Math.PI * deltaTime * 0.4
 		if (scene.children[7] !== undefined && scene.children[7].children[4] !== undefined)
 		scene.children[7].children[4].rotation.y += Math.PI * deltaTime * 0.4
 		
-		
-		// if (scene.children[8] !== undefined && scene.children[8].children[1] !== undefined)
-		// scene.children[8].children[1].rotation.y += Math.PI * deltaTime * .4
 		if (scene.children[8] !== undefined && scene.children[8].children[4] !== undefined)
 		scene.children[8].children[4].rotation.y += Math.PI * deltaTime * .4
-		// if (scene.children[9] !== undefined && scene.children[9].children[1] !== undefined)
-		// scene.children[9].children[1].rotation.y += Math.PI * deltaTime * .4
+
 	}
 	
-
 	update();
 	render();
 }
@@ -852,8 +891,10 @@ var doObject = function(o)
 			alert('open machine')
 			case "machine_open":
 			console.log('open machine')
-			// if (o.object.visible)	
-			window.location.href = robot_arm_url;
+			// if (o.object.visible)			
+			window.location.href = (localStorage.getItem('robot_arm_url') === null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
+
+			// window.location.href = robot_arm_url;
 			break;
 
 			case "machine_base":
@@ -885,7 +926,7 @@ var doObject = function(o)
 			case "product_open":
 			console.log('open product')
 			// if (o.object.visible)	
-			window.location.href = model_url;
+			window.location.href = (localStorage.getItem('model_url') === null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
 			break;
 			case "product_base":
 			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
@@ -894,9 +935,6 @@ var doObject = function(o)
 			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
 			o.object.visible = !o.object.visible
 			break;
-
-
-			
 			default:
 		}
 	}
@@ -935,6 +973,7 @@ var onDocumentMouseMove = function (evt) {
 
 	raycaster.setFromCamera(mouse, camera);
 	console.log('ray', scene.children)
+	if (scene.children[8] === undefined || scene.children[7] === undefined) return
     console.log('ray', scene.children[7].children)
 	console.log('ray', scene.children[8].children)
     // var intersects = raycaster.intersectObjects(scene.children[7].children.concat(scene.children[8].children))

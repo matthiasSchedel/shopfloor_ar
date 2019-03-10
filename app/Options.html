@@ -1,0 +1,124 @@
+<html>
+    <head>
+
+        <style>
+            			.openNav {
+				margin-top: 1px; 
+				margin-left: 2px; 
+				font-size:30px;
+				cursor:pointer;
+                top: 0px;
+                height: 20px;
+
+			}
+        </style>
+    </head>
+  <body>
+        <span class="openNav" onclick="openApp()">  &#9881; Open App</span>
+
+    <div id="myNav" class="overlay">
+      <div class="overlay-content; text-align:left;">
+        <span style="display:block">
+          <h2 >Set robot_arm_url</h2>
+          <input
+            style="min-width: 85%"
+            type="text"
+            value=""
+            name="robot_arm_url"
+            id="robot_arm_url"
+            maxlength="1000"
+          />
+          <button onclick="setUrl('robot_arm_url')">Set</button>
+        </span>
+        <span style="display:block"> </span>
+        <span style="display:block">
+          <h2 >Set model_url</h2>
+          <input
+            style="min-width: 85%"
+            value=""
+            type="text"
+            name="model_url"
+            id="model_url"
+            maxlength="1000"
+          />
+          <button onclick="setUrl('model_url')">Set</button>
+        </span>
+      </div>
+    </div>
+    <script>
+      window.oncontextmenu = null;
+      var model_url = "https://scale-it.org/de/";
+      var robot_arm_url =
+        "https://scale-it.org/de/708/veranstaltung-scaleit-industrielle-apps-fuer-die-produktion-im-mittelstand-am-14-maerz-2019-in-stuttgart.html";
+      document.addEventListener("loadend", e => {
+        if (localStorage.getItem("robot_arm_url") !== null) {
+          robot_arm_url = localStorage.getItem("robot_arm_url");
+          document.getElementById('robot_arm_url').value = robot_arm_url;
+          document.getElementsByName('robot_arm_url')[0].setAttribute('value',robot_arm_url)
+        }
+        if (localStorage.getItem("model_url") !== null) {
+          model_url = localStorage.getItem("model_url");
+          document.getElementById('model_url').value = model_url;
+          document.getElementsByName('model_url')[0].setAttribute('value',robot_arm_url)
+
+        }
+        // document
+        //   .getElementById("robot_arm_url")
+        //   .setAttribute("value", robot_arm_url);
+        // document.getElementById("model_url").setAttribute("value", model_url);
+      });
+
+      function setUrl(url) {
+        console.log("set url");
+        switch (url) {
+          case "model_url":
+            let model_url = document
+              .getElementById("model_url").value
+              console.log('local model url',model_url)
+            localStorage.removeItem("model_url")
+            localStorage.setItem("model_url", model_url);
+            break;
+          case "robot_arm_url":
+            let robot_arm_url = document
+              .getElementById("robot_arm_url").value
+              console.log('local robot_arm url',robot_arm_url)
+
+              localStorage.removeItem("robot_arm_url")
+            localStorage.setItem("robot_arm_url", robot_arm_url);
+            break;
+          default:
+            break;
+        }
+      }
+
+      function openApp() {
+        // console.log("open");
+        document.location.href = "Index.html"
+        // document.getElementById("myNav").style.height = "100%";
+      }
+
+      function closeNav() {
+        document.getElementById("myNav").style.height = "0%";
+      }
+      openNav();
+
+      if (localStorage.getItem("robot_arm_url") !== null) {
+          robot_arm_url = localStorage.getItem("robot_arm_url");
+          document.getElementById('robot_arm_url').value = robot_arm_url
+        //   document.getElementsByName('robot_arm_url')[0].setAttribute('value',robot_arm_url)
+
+        }
+        if (localStorage.getItem("model_url") !== null) {
+          model_url = localStorage.getItem("model_url");
+          document.getElementById('model_url').value = model_url
+        }
+       function printlocalstorage() {
+           console.log('model_url',localStorage.getItem('model_url'))
+           console.log('robot_arm_url',localStorage.getItem('robot_arm_url'))
+           console.log('lengthj',localStorage.length)
+
+       }
+    </script>
+    <!-- <button onclick="printlocalstorage()"> Print local storage</button> -->
+  </body>
+</html>

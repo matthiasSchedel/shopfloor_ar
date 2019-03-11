@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {
+                background-color: #ffffff;
+                margin: 0;
+                overflow: hidden;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <script src="js/three.js"></script>
+
+        <script src="js/controls/TrackballControls.js"></script>
+
+        <script src="js/renderers/CSS3DRenderer.js"></script>
+
+        <script>
+
+        var camera, sceneGl, rendererGl;
+var sceneCss, rendererCss;
+var controls;
+
+var Element = function ( id, x, y, z, ry ) {
+
+var div = document.createElement( 'div' );
+div.style.width = '480px';
+div.style.height = '360px';
+div.style.backgroundColor = '#000';
+
+var iframe = document.createElement( 'iframe' );
+iframe.style.width = '480px';
+iframe.style.height = '360px';
+iframe.style.border = '0px';
+iframe.src = [ 'https://www.scale-it.org'].join( '' );
+div.appendChild( iframe );
+
+var object = new THREE.CSS3DObject( div );
+object.position.set( x, y, z );
+object.rotation.y = ry;
+
+return object;
+
+};
+
+init();
+animate();
+
+function init() {
+
+    camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 5000 );    
+    camera.position.set( 500, 350, 750 );
+
+    controls = new THREE.TrackballControls(camera);
+
+    sceneGl = new THREE.Scene();
+    sceneCss = new THREE.Scene();
+
+    var material = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        opacity: 0.0,
+        side: THREE.DoubleSide
+    });
+
+    var xpos = [50, -10, 30, 70, 110];
+    var ypos = [60, -40, 0, 40, 80];
+    var zpos = [-30, -50, 0, 50, 100];
+
+    // for (var i = 0; i < 5; i++) {
+
+        // var element = document.createElement('div');
+        // element.style.width = '100px';
+        // element.style.height = '100px';
+        // element.style.opacity = 1.0;
+        // element.style.background = new THREE.Color(Math.random() * 0xff0000).getStyle();
+
+        var group = new THREE.Group();
+        group.add( new Element( 'SJOz3qjfQXU', 0, 0, 240, 0 ) );     
+
+        sceneCss.add(group);
+
+
+        // var geometry = new THREE.PlaneGeometry(100, 100);
+        // var mesh = new THREE.Mesh(geometry, material);
+        // mesh.position.copy(object.position);
+        // mesh.rotation.copy(object.rotation);
+        // mesh.scale.copy(object.scale);
+        // sceneGl.add(mesh);
+
+    // }
+
+
+    var boxGeom = new THREE.CubeGeometry(60, 60, 60);
+
+    var cubeMaterial = new THREE.MeshBasicMaterial({
+        color: 0x05009A,
+        shading: THREE.FlatShading,
+        side: THREE.DoubleSide
+    });
+
+    var cube = new THREE.Mesh(boxGeom, cubeMaterial);
+    cube.position.copy(new THREE.Vector3(100, 75, 50));
+    cube.rotation.copy(Math.PI / 6);
+
+    sceneGl.add(cube);
+
+
+    rendererCss = new THREE.CSS3DRenderer();
+    rendererCss.setSize(window.innerWidth, window.innerHeight);
+    rendererCss.domElement.style.position = 'absolute';
+    rendererCss.domElement.style.top = 0;
+
+    rendererGl = new THREE.WebGLRenderer({alpha:true});
+    rendererGl.setClearColor(0x00ff00, 0.0);
+
+    rendererGl.setSize(window.innerWidth, window.innerHeight);
+
+    rendererGl.domElement.style.position = 'absolute'; //important to make object clickable
+    rendererGl.domElement.style.zIndex = -100;
+    rendererGl.domElement.style.top = 0;
+    rendererCss.domElement.appendChild(rendererGl.domElement);
+
+    document.body.appendChild(rendererCss.domElement);
+
+}
+
+function animate() {
+
+    requestAnimationFrame(animate);
+
+    controls.update();
+
+    rendererGl.render(sceneGl, camera);
+    rendererCss.render(sceneCss, camera);
+
+}
+        </script>
+    </body>
+</html>

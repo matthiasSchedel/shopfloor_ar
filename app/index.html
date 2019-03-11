@@ -1,4 +1,5 @@
 ﻿<!DOCTYPE html>
+
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<title>Scale IT AR App</title>
@@ -24,965 +25,1017 @@
 	<script src="threex/threex-arbasecontrols.js"></script>
 	<script src="threex/threex-armarkercontrols.js"></script>
 	<style>
-			html, body {
-				height: 100%;
-				overflow: hidden;
-				margin : 0px; 
-				/* font-family: Monospace; */
-				font-family: 'Lato', sans-serif;
-			}
-			#blocker {
-				position: absolute;
-				top: 0px;
-				left: 0px;
-				width: 100%;
-				height: 100%;
-			}
-			#myNav {
-				/* z-index:1; */
-			}
+		html,
+		body {
+			height: 100%;
+			overflow: hidden;
+			margin: 0px;
+			/* font-family: Monospace; */
+			font-family: 'Lato', sans-serif;
+		}
+
+		#blocker {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width: 100%;
+			height: 100%;
+		}
+
+		#myNav {
+			/* z-index:1; */
+		}
+
+		.overlay {
+			height: 0%;
+			width: 100%;
+			position: fixed;
+			z-index: 1;
+			top: 0;
+			left: 0;
+			background-color: rgb(0, 0, 0);
+			background-color: rgba(0, 0, 0, 0.9);
+			overflow-y: hidden;
+			transition: 0.5s;
+		}
+
+		iframe {
+			z-index: 0;
+		}
+
+		.overlay-content {
+			position: relative;
+			top: 25%;
+			width: 100%;
+			text-align: center;
+			margin-top: 30px;
+		}
+
+
+		.openNav {
+			margin-top: 1px;
+			margin-left: 2px;
+			font-size: 30px;
+			cursor: pointer;
+		}
+
+		input {
+			z-index: 1;
+		}
+
+		button {
+			cursor: pointer;
+			z-index: 1;
+		}
+
+		.overlay a {
+			padding: 8px;
+			text-decoration: none;
+			font-size: 36px;
+			color: #818181;
+			display: block;
+			transition: 0.3s;
+		}
+
+		.overlay a:hover,
+		.overlay a:focus {
+			color: #f1f1f1;
+		}
+
+		.overlay .closebtn {
+			position: absolute;
+			top: -10px;
+			right: 0px;
+			font-size: 60px;
+		}
+
+		@media screen and (max-height: 450px) {
 			.overlay {
-			  height: 0%;
-			  width: 100%;
-			  position: fixed;
-			  z-index: 1;
-			  top: 0;
-			  left: 0;
-			  background-color: rgb(0,0,0);
-			  background-color: rgba(0,0,0, 0.9);
-			  overflow-y: hidden;
-			  transition: 0.5s;
-			}
-			iframe {
-				z-index: 0;
-			}
-			
-			.overlay-content {
-			  position: relative;
-			  top: 25%;
-			  width: 100%;
-			  text-align: center;
-			  margin-top: 30px;
+				overflow-y: auto;
 			}
 
-
-			.openNav {
-				margin-top: 1px; 
-				margin-left: 2px; 
-				font-size:30px;
-				cursor:pointer;
-			}
-			input {
-				z-index: 1;
-			}
-			button {
-				cursor:pointer;
-				z-index: 1;
-			}	
 			.overlay a {
-			  padding: 8px;
-			  text-decoration: none;
-			  font-size: 36px;
-			  color: #818181;
-			  display: block;
-			  transition: 0.3s;
+				font-size: 20px
 			}
-			
-			.overlay a:hover, .overlay a:focus {
-			  color: #f1f1f1;
-			}
-			
+
 			.overlay .closebtn {
-			  position: absolute;
-			  top: -10px;
-			  right: 0px;
-			  font-size: 60px;
+				font-size: 40px;
+				top: 2px;
+				right: 5px;
 			}
-			
-			@media screen and (max-height: 450px) {
-			  .overlay {overflow-y: auto;}
-			  .overlay a {font-size: 20px}
-			  .overlay .closebtn {
-			  font-size: 40px;
-			  top: 2px;
-			  right: 5px;
-			  }
-			}
-			</style>
+		}
+	</style>
 </head>
 
 <body>
 
-<!-- 
+	<!-- 
   AR App created by Matthias Schedel
   Based on the AR.js library and examples created by Jerome Etienne: https://github.com/jeromeetienne/AR.js/
 -->
 	<div id="myNav" class="overlay">
-	  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-	  <div class="overlay-content; text-align:left;">
-		<span style="display:block"> 
-			<h2 style="color:#f1f1f1" > Set robot_arm_url </h2>
-			<input style="min-width: 85%" type="text" value="..." name="text" id="robot_arm_url" maxlength="1000">
-			<button onclick="setUrl('robot_arm_url')">Set</button>
-		</span>
-		<span style="display:block"> </span>
-		<span style="display:block"> 
-			<h2 style="color:#f1f1f1" > Set model_url </h2>
-			<input style="min-width: 85%"value="..." type="text" name="text" id="model_url" maxlength="1000">
-			<button onclick="setUrl('model_url')">Set</button>
-		</span>
-	  </div>
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+		<div class="overlay-content; text-align:left;">
+			<span style="display:block">
+				<h2 style="color:#f1f1f1"> Set robot_arm_url </h2>
+				<input style="min-width: 85%" type="text" value="..." name="text" id="robot_arm_url" maxlength="1000">
+				<button onclick="setUrl('robot_arm_url')">Set</button>
+			</span>
+			<span style="display:block"> </span>
+			<span style="display:block">
+				<h2 style="color:#f1f1f1"> Set model_url </h2>
+				<input style="min-width: 85%" value="..." type="text" name="text" id="model_url" maxlength="1000">
+				<button onclick="setUrl('model_url')">Set</button>
+			</span>
+		</div>
 	</div>
-	<span class="openNav" onclick="openNav()">  &#9881; Settings</span>
+	<span class="openNav" onclick="openNav()"> &#9881; Settings</span>
 
 	<script>
 		window.oncontextmenu = null;
-	var model_url = "https://scale-it.org/de/";
-	var robot_arm_url =  "https://scale-it.org/de/708/veranstaltung-scaleit-industrielle-apps-fuer-die-produktion-im-mittelstand-am-14-maerz-2019-in-stuttgart.html";
-	document.addEventListener('loadend',e => {
+		var model_url = "https://scale-it.org/de/";
+		var robot_arm_url = "https://scale-it.org/de/708/veranstaltung-scaleit-industrielle-apps-fuer-die-produktion-im-mittelstand-am-14-maerz-2019-in-stuttgart.html";
+		document.addEventListener('loadend', e => {
 			if (localStorage.getItem('robot_arm_url') !== null) {
-				robot_arm_url = localStorage.getItem('robot_arm_url');	
+				robot_arm_url = localStorage.getItem('robot_arm_url');
 			}
 			if (localStorage.getItem('model_url') !== null) {
-				model_url = localStorage.getItem('model_url');	
+				model_url = localStorage.getItem('model_url');
 			}
-			document.getElementById('robot_arm_url').setAttribute('value',robot_arm_url);
-			document.getElementById('model_url').setAttribute('value',model_url);
-	}
-	)
-	
-	
-	function setUrl(url)
-	{
-		console.log('set url')
-		switch(url) {
-			case "model_url" :
-				model_url = document.getElementById('model_url').getAttribute('value');
-				localStorage.setItem('model_url',model_url)
-				break;
-			case "robot_arm_url":
-				robot_arm_url = document.getElementById('robot_arm_url').getAttribute('value');
-				localStorage.setItem('robot_arm_url',robot_arm_url)
-				break;
-			default:
-				break;
+			document.getElementById('robot_arm_url').setAttribute('value', robot_arm_url);
+			document.getElementById('model_url').setAttribute('value', model_url);
 		}
-	}
+		)
 
-	function openNav() {
-		window.location.href = "Options.html"
-	  // console.log('open')
-	  // document.getElementById("myNav").style.height = "100%";
-	}
-	
-	function closeNav() {
-	  document.getElementById("myNav").style.height = "0%";
-	}
+
+		function setUrl(url) {
+			console.log('set url')
+			switch (url) {
+				case "model_url":
+					model_url = document.getElementById('model_url').getAttribute('value');
+					localStorage.setItem('model_url', model_url)
+					break;
+				case "robot_arm_url":
+					robot_arm_url = document.getElementById('robot_arm_url').getAttribute('value');
+					localStorage.setItem('robot_arm_url', robot_arm_url)
+					break;
+				default:
+					break;
+			}
+		}
+
+		function openNav() {
+			window.location.href = "Options.html"
+			// console.log('open')
+			// document.getElementById("myNav").style.height = "100%";
+		}
+
+		function closeNav() {
+			document.getElementById("myNav").style.height = "0%";
+		}
 	</script>
-<script>	
-
-var models = {
-	'robot_arm':
-	{
-		url:"",
-		image_path:"",
-		model_path:{
-			mtl_path:"",
-			obj_path:""
-		}
-	} ,
-	'machine':{
-		url:"",
-		image_path:"",
-		model_path:{
-			mtl_path:"",
-			obj_path:""
-		}	
-	}
-}
-
-var css_renderer, css_scene;
-var base_material;
-var css_object;
-var scene, renderer; 
-var keyboard, camera, clock, deltaTime, totalTime;
-var controls;
-var objects = []
-var models_dict = []
-var arToolkitSource, arToolkitContext;
-var doRotate = true;
-var markerRoot1, markerRoot2;
-var mesh1, mesh6, mesh7;
-
-initialize();
-animate();
-
-function initialize()
-{
-	scene = new THREE.Scene();
-	css_scene = new THREE.Scene();
-
-	base_material = new THREE.MeshBasicMaterial({
-        color: 0x000008,
-        opacity: 0.1,
-        side: THREE.DoubleSide
-    });
-	
-	let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.5 );
-	scene.add( ambientLight );
-				
-	camera = new THREE.PerspectiveCamera();
-
-	css_renderer = new THREE.CSS3DRenderer();
-    css_renderer.setSize(window.innerWidth, window.innerHeight);
-    css_renderer.domElement.style.position = 'absolute';
-	css_renderer.domElement.style.top = 0;
-	renderer = new THREE.WebGLRenderer({
-		antialias : true,
-		alpha: true
-	});
-	renderer.setClearColor(0x00ff00, 0.0);
-	renderer.domElement.style.position = 'absolute';
-    renderer.domElement.style.zIndex = -100;
-	renderer.domElement.style.top = 0
-	// document.body.appendChild(css_renderer.domElement);
-	document.body.appendChild(renderer.domElement);
-	// document.body.appendChild(renderer.domElement);
-
-	controls = new THREE.TrackballControls( camera );
-	controls.rotateSpeed = 4;
-	
-	renderer.setClearColor(new THREE.Color(0x0000000), 0)
-	renderer.setSize( 640, 480 );
-	renderer.domElement.style.position = 'absolute'
-	renderer.domElement.style.top = '0px'
-	renderer.domElement.style.left = '0px'
-	// document.body.appendChild( renderer.domElement );
-
-	console.log('css stuff',css_renderer, camera)
-	clock = new THREE.Clock();
-	deltaTime = 0;
-	totalTime = 0;
-	
-	////////////////////////////////////////////////////////////
-	// setup arToolkitSource
-	////////////////////////////////////////////////////////////
- 
-	arToolkitSource = new THREEx.ArToolkitSource({
-		sourceType : 'webcam'
-	});
-
-var iframe_1, iframe_2;
-
-	function onResize()
-	{
-		arToolkitSource.onResize()	
-		arToolkitSource.copySizeTo(renderer.domElement)	
-		// arToolkitSource.copySizeTo(css_renderer.domElement)		
-		if ( arToolkitContext.arController !== null )
-		{
-			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)	
-
-arToolkitContext.arController.addEventListener("getMarker",function(event) {
-	
-    if (event.data.marker.id === 10) {
-			var s, v;
-			if (iframe_1 === undefined)
-				{
-					let url = (localStorage.getItem('robot_arm_url') ==! null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
-					url = "https://scale-it.org/de/"; 
-					iframe_1 = createIframe(url, 'robot_arm_url_iframe')
-					s = [
-							0,0,1,
-							iframe_1.offsetWidth,0,1,
-							0,iframe_1.offsetHeight,1
-					];
-
-					v = apply(adjugate(s),[iframe_1.offsetWidth,iframe_1.offsetHeight,1]);
-
-					s = multiply(s,[
-							v[0], 0, 0,
-							0, v[1], 0,
-							0, 0, v[2]
-					]);
-					document.body.appendChild(iframe_1);
-				} else 
-				{
-
-					s = [
-							0,0,1,
-							iframe_1.offsetWidth,0,1,
-							0,iframe_1.offsetHeight,1
-					];
-
-					v = apply(adjugate(s),[iframe_1.offsetWidth,iframe_1.offsetHeight,1]);
-
-					s = multiply(s,[
-							v[0], 0, 0,
-							0, v[1], 0,
-							0, 0, v[2]
-					]);	
-					
-				}
-			
-				
-			// var iframe = createIframe(robot_arm_url);
-// var iframe2 = createIframe(model_url); 
-// // iframe.hidden = true
-
-
-// document.body.appendChild(iframe);
-// document.body.appendChild(iframe2);
-		// console.log('test marker',event.data.marker)
-        var d = [
-            event.data.marker.vertex[(4 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(4 - event.data.marker.dir) % 4][1],1,
-            event.data.marker.vertex[(5 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(5 - event.data.marker.dir) % 4][1],1,
-            event.data.marker.vertex[(7 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(7 - event.data.marker.dir) % 4][1],1
-        ];
-
-        var v = apply(adjugate(d),[event.data.marker.vertex[(6 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(6 - event.data.marker.dir) % 4][1],1]);
-
-        d = multiply(d,[
-            v[0],0,0,
-            0,v[1],0,
-            0,0,v[2]
-        ]);
-
-        var t = multiply(d,adjugate(s));
-
-        for (i = 0; i < 9; ++i) {
-            t[i] = t[i] / t[8];
-            t[i] = Math.abs(t[i]) < Number.EPSILON ? 0 : t[i];
-        }
-
-        t = [
-            t[0],t[1],0,t[2],
-            t[3],t[4],0,t[5],
-            0,0,1,0,
-            t[6],t[7],0,t[8]
-        ];
-				// iframe.hidden = false;
-		// iframe.style.opacity = "80%";
-
-		iframe_1.style.transform = "matrix3d(" + t.join(", ") + ")";
-		
-
-		} 
-		if (event.data.marker.id === 12){
-			var s, v;
-			if (iframe_2 === undefined)
+	<script>
+		var startTime_model;
+		var startTime_robot_arm;
+		var models = {
+			'robot_arm':
 			{
-				
-					let url = (localStorage.getItem('model_url') ==! null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
-					url = "https://scale-it.org/de/"; 
-					// if (document.getElementsByName('model_url_iframe') > 0)
-					// document.removeChild(document.getElementsByName('model_url_iframe')[0])
-
-					iframe_2 = createIframe(url, 'model_url_iframe')
-
-
-					s = [
-							0,0,1,
-							iframe_2.offsetWidth,0,1,
-							0,iframe_2.offsetHeight,1
-					];
-
-					v = apply(adjugate(s),[iframe_2.offsetWidth,iframe_2.offsetHeight,1]);
-
-					s = multiply(s,[
-							v[0], 0, 0,
-							0, v[1], 0,
-							0, 0, v[2]
-					]);
-					// if (document.getElementsByName('model_url_iframe') > 0)
-					// 	{ 
-					// 		document.getElementsByName('model_url_iframe')[0] = iframe_2
-					// 	}
-					// 	else {
-							document.body.appendChild(iframe_2);
-
-						} else {
-							s = [
-							0,0,1,
-							iframe_2.offsetWidth,0,1,
-							0,iframe_2.offsetHeight,1
-					];
-
-					v = apply(adjugate(s),[iframe_2.offsetWidth,iframe_2.offsetHeight,1]);
-
-					s = multiply(s,[
-							v[0], 0, 0,
-							0, v[1], 0,
-							0, 0, v[2]
-					]);
-						}
-				// } else 
-				// {
-				// 	iframe_2 = document.getElementById('robot_arm_url_iframe')
-				// 	s = [
-				// 			0,0,1,
-				// 			iframe_2.offsetWidth,0,1,
-				// 			0,iframe_2.offsetHeight,1
-				// 	];
-
-				// 	v = apply(adjugate(s),[iframe_2.offsetWidth,iframe_2.offsetHeight,1]);
-
-				// 	s = multiply(s,[
-				// 			v[0], 0, 0,
-				// 			0, v[1], 0,
-				// 			0, 0, v[2]
-				// 	]);	
-					
-				// }
-			var d = [
-            event.data.marker.vertex[(4 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(4 - event.data.marker.dir) % 4][1],1,
-            event.data.marker.vertex[(5 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(5 - event.data.marker.dir) % 4][1],1,
-            event.data.marker.vertex[(7 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(7 - event.data.marker.dir) % 4][1],1
-        ];
-
-        var v = apply(adjugate(d),[event.data.marker.vertex[(6 - event.data.marker.dir) % 4][0],event.data.marker.vertex[(6 - event.data.marker.dir) % 4][1],1]);
-
-        d = multiply(d,[
-            v[0],0,0,
-            0,v[1],0,
-            0,0,v[2]
-        ]);
-
-        var t = multiply(d,adjugate(s));
-
-        for (i = 0; i < 9; ++i) {
-            t[i] = t[i] / t[8];
-            t[i] = Math.abs(t[i]) < Number.EPSILON ? 0 : t[i];
-        }
-
-        t = [
-            t[0],t[1],0,t[2],
-            t[3],t[4],0,t[5],
-            0,0,1,0,
-            t[6],t[7],0,t[8]
-        ];
-		// iframe2.hidden = false;
-		// iframe2.style.display = "";
-		iframe_2.style.transform = "matrix3d(" + t.join(", ") + ")";	
-		
-		// iframe.hidden = true;
-        // mesh.visible = false;
-		} 
-		if (event.data.marker.id !== 10) {
-			// console.log('marker id', event.data.marker.id);
-		// iframe.hidden = true;
-        // mesh.visible = false;
+				url: "",
+				image_path: "",
+				model_path: {
+					mtl_path: "",
+					obj_path: ""
+				}
+			},
+			'machine': {
+				url: "",
+				image_path: "",
+				model_path: {
+					mtl_path: "",
+					obj_path: ""
+				}
+			}
 		}
-		else {
-		// iframe.hidden = true;
-        // mesh.visible = false;
-    }
-});
-		}	
-	}
 
-	arToolkitSource.init(function onReady(){
-		onResize()
-	});
-	
-	// handle resize event
-	window.addEventListener('resize', function(){
-		onResize()
-	});
+		var css_renderer, css_scene;
+		var base_material;
+		var css_object;
+		var scene, renderer;
+		var keyboard, camera, clock, deltaTime, totalTime;
+		var controls;
+		var objects = []
+		var models_dict = []
+		var arToolkitSource, arToolkitContext;
+		var doRotate = true;
+		var markerRoot1, markerRoot2;
+		var markerControls1;
+		var mesh1, mesh6, mesh7;
 
-	
-	////////////////////////////////////////////////////////////
-	// setup arToolkitContext
-	////////////////////////////////////////////////////////////	
+		initialize();
+		animate();
 
-	// create atToolkitContext
-	arToolkitContext = new THREEx.ArToolkitContext({
-		cameraParametersUrl: 'data/camera-parameter/camera_para.dat',
-		detectionMode: 'mono'
-	});
-	
-	// copy projection matrix to camera when initialization complete
-	arToolkitContext.init( function onCompleted(){
-		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
-		document.getElementsByTagName('canvas')[0].setAttribute('style','position:relative');
-	});
+		function initialize() {
+			scene = new THREE.Scene();
+			// css_scene = new THREE.Scene();
 
-	
+			base_material = new THREE.MeshBasicMaterial({
+				color: 0x000008,
+				opacity: 0.1,
+				side: THREE.DoubleSide
+			});
 
-	document.addEventListener('mousedown', function(evt){
-		// console.log('css_object',css_object)
-		// console.log('arToolkitContext',arToolkitContext)
-		// console.log('arToolkitSource',arToolkitSource)
-		evt.preventDefault()
-		onDocumentMouseMove(evt);
-	});
+			let ambientLight = new THREE.AmbientLight(0xcccccc, 0.5);
+			scene.add(ambientLight);
 
-	// document.addEventListener('mousemove', function(evt){
-	// 	// console.log('css_object',css_object)
-	// 	// console.log('arToolkitContext',arToolkitContext)
-	// 	// console.log('arToolkitSource',arToolkitSource)
-	// 	onDocumentMouseMove(evt);
+			camera = new THREE.PerspectiveCamera();
 
-	// });
+			// css_renderer = new THREE.CSS3DRenderer();
+			// css_renderer.setSize(window.innerWidth, window.innerHeight);
+			// css_renderer.domElement.style.position = 'absolute';
+			// css_renderer.domElement.style.top = 0;
+			renderer = new THREE.WebGLRenderer({
+				antialias: true,
+				alpha: true
+			});
+			renderer.setClearColor(0x00ff00, 0.0);
+			renderer.domElement.style.position = 'absolute';
+			renderer.domElement.style.zIndex = -100;
+			renderer.domElement.style.top = 0
+			// document.body.appendChild(css_renderer.domElement);
+			document.body.appendChild(renderer.domElement);
+			// document.body.appendChild(renderer.domElement);
 
+			// controls = new THREE.TrackballControls( camera );
+			// controls.rotateSpeed = 4;
 
-	window.addEventListener('touchstart', function(evt)
-	{
-		evt.preventDefault();
-		console.log('css_object',css_object)
-		console.log('arToolkitContext',arToolkitContext)
-		console.log('arToolkitSource',arToolkitSource)
-		// console.log('arToolkitContext',arToo)
-	
+			renderer.setClearColor(new THREE.Color(0x0000000), 0)
+			renderer.setSize(640, 480);
+			renderer.domElement.style.position = 'absolute'
+			renderer.domElement.style.top = '0px'
+			renderer.domElement.style.left = '0px'
+			// document.body.appendChild( renderer.domElement );
 
-		onDocumentMouseMove(evt);
-	}
-	)
-	////////////////////////////////////////////////////////////
-	// setup markerRoots
-	////////////////////////////////////////////////////////////
+			// console.log('css stuff',css_renderer, camera)
+			clock = new THREE.Clock();
+			deltaTime = 0;
+			totalTime = 0;
 
-	let loader = new THREE.TextureLoader();
-	// let texture = loader.load( 'images/border.png' );
-	//scale.hero hiro
-	let patternArray = ["letterA", "letterB", "letterC", "letterD", "letterF", "robot-arm_marker", "board_marker"];
-	let colorArray   = [0xff0000, 0xff8800, 0xffff00, 0x00cc00, 0x0000ff, 0xcc00ff, 0xcccccc];
-	for (let i = 0; i < 7; i++)
-	{
-		let markerRoot = new THREE.Group();
-		// let markerRootCSS = new THREE.Group();
-		scene.add(markerRoot);
-		// css_scene.add(markerRootCSS);
-		let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
-			type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
-		});
-		// let markerControlsCss = new THREEx.ArMarkerControls(arToolkitContext, markerRootCSS, {
-		// 	type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
-		// });
-		
-		switch(i) {
-			case 5:
-	
+			////////////////////////////////////////////////////////////
+			// setup arToolkitSource
+			////////////////////////////////////////////////////////////
 
+			arToolkitSource = new THREEx.ArToolkitSource({
+				sourceType: 'webcam'
+			});
 
-			// var geometry = new THREE.PlaneGeometry(1, 1);
-			// var mesh = new THREE.Mesh(geometry, base_material);
-			// mesh.position.copy(object.position);
-			// mesh.rotation.copy(object.rotation);
-			// mesh.scale.copy(object.scale);
-			// markerRoot.add(mesh);
+			var iframe_1, iframe_2;
 
-			let geometry1 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-			let materialx = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.0 } );
-				mesh6 = new THREE.Mesh( geometry1, materialx );
-				mesh6.rotation.x = -Math.PI/2;
-				mesh6.name = 'machine_base'
-				markerRoot.add( mesh6 );
-				
-				function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
-				function onError(xhr) { console.log( 'An error happened' ); }
-				
-				{
-					let map = new THREE.TextureLoader().setPath( 'data/images/' ).load('scale_open.png');
-					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
-					let sprite = new THREE.Sprite(material1);
-					sprite.rotation.x = 180
-					sprite.rotation.z = 0
-					sprite.rotation.y = 180
-					sprite.position.y = 1.5
-					sprite.position.x = 1
-					sprite.position.z = -.5
-					sprite.scale.x = .3
-					sprite.scale.y = .3
-					sprite.scale.z = .3
-					sprite.visible = false;
-					sprite.name = "machine_open"
+			function onResize() {
+				arToolkitSource.onResize()
+				arToolkitSource.copySizeTo(renderer.domElement)
+				// arToolkitSource.copySizeTo(css_renderer.domElement)		
+				if (arToolkitContext.arController !== null) {
+					arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)
+
 					
-					markerRoot.add( sprite );
-					{
-					let geometry2 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-
-					let materialy = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.0, side: THREE.DoubleSide } );
-					let nmesh7 = new THREE.Mesh( geometry2, materialy );
-					nmesh7.rotation.x = 90;
-					nmesh7.position.x = 1;
-					nmesh7.position.z = -.5;
-					nmesh7.position.y = 1.5;
-					nmesh7.scale.x = .6
-					nmesh7.scale.y = .6
-					nmesh7.scale.z = .6
-					nmesh7.visible = false;
-					nmesh7.name = 'machine_open_base';
-					markerRoot.add( nmesh7 );
-				}
-				}
-				{
-					let map = new THREE.TextureLoader().setPath( 'data/images/' ).load('scale_2.png');
-					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
-					let sprite = new THREE.Sprite(material1);
-					sprite.rotation.x = 180
-					sprite.rotation.z = 0
-					sprite.rotation.y = 180
-					sprite.position.y = .5
-					sprite.visible = false;
-					sprite.name = "machine_sprite"
-					markerRoot.add( sprite );
-				}
-
-				new THREE.MTLLoader()
-					.setPath( 'data/models/' )
-					.load( 'model-1.mtl', function ( materials ) {
-						materials.preload();
-						new THREE.OBJLoader()
-							.setMaterials( materials )
-							.setPath( 'data/models/' )
-							.load( 'model-1.obj', function ( group ) {
-								mesh0 = group//.children[0];
-								mesh0.position.y = 1.25/3;
-								mesh0.scale.set(1.2,1.2,1.2);
-								mesh0.name = "machine_model"
-								mesh0.visible = true
-								markerRoot.add(mesh0);
-							}, onProgress, onError );
-					});			
-			break;
-
-			case 6:
-				{
-					let geometry2 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-
-					let materialy = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.00 } );
-					mesh7 = new THREE.Mesh( geometry2, materialy );
-					mesh7.rotation.x = -Math.PI/2;
-					mesh7.name = 'machine_base'
-					markerRoot.add( mesh7 );
-				}
-				
-				function onProgress(xhr) { console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ); }
-				function onError(xhr) { console.log( 'An error happened' ); }
-			
-				{
-					let map = new THREE.TextureLoader().setPath( 'data/images/' ).load('scale_open.png');
-					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
-					let sprite = new THREE.Sprite(material1);
-					sprite.rotation.x = 180
-					sprite.rotation.z = 0
-					sprite.rotation.y = 180
-					sprite.position.y = 1.5
-					sprite.position.x = 1
-					sprite.position.z = -.5
-					sprite.scale.x = .3
-					sprite.scale.y = .3
-					sprite.scale.z = .3
-					sprite.visible = false;
-					sprite.name = "product_open"
-					markerRoot.add( sprite );
-					{
-					let geometry2 = new THREE.PlaneBufferGeometry(1,1, 4,4);
-
-					let materialy = new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.0, side: THREE.DoubleSide } );
-					let nmesh7 = new THREE.Mesh( geometry2, materialy );
-					nmesh7.rotation.x = 90;
-					nmesh7.position.x = 1;
-					nmesh7.position.z = -.5;
-					nmesh7.position.y = 1.5;
-					nmesh7.scale.x = .6
-					nmesh7.scale.y = .6
-					nmesh7.scale.z = .6
-					nmesh7.name = 'product_open_base';
-					nmesh7.visible = false;
-					markerRoot.add( nmesh7 );
-				}
-				}
-
-				{
-					let map = new THREE.TextureLoader().setPath( 'data/images/' ).load('scale_it_1.png');
-					let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
-					let sprite = new THREE.Sprite(material1);
-					sprite.rotation.x = 180
-					sprite.rotation.z = 0
-					sprite.rotation.y = 180
-					sprite.position.y = .5
-					console.log('sprite',sprite)
-					sprite.visible = false;
-					sprite.name = "product_sprite"
-					markerRoot.add( sprite );
-				}
-				
-				
-				new THREE.MTLLoader()
-					.setPath( 'data/models/' )
-					.load( 'model-2.mtl', function ( materials ) {
-						materials.preload();
-						new THREE.OBJLoader()
-							.setMaterials( materials )
-							.setPath( 'data/models/' )
-							.load( 'model-2.obj', function ( group ) {
-								mesh0 = group//.children[0];
-								mesh0.position.y = 1.25/3;
-								mesh0.scale.set(.7,.7,.7);
-								mesh0.visible = true;
-								mesh0.name = "product_model"
-								markerRoot.add(mesh0);
-								models_dict.push({
-									key: mesh0.name,
-									value: mesh0
-								})
-							}, onProgress, onError );
+					console.log('arToolkitContext.arController',arToolkitContext.arController)
+					
+					arToolkitContext.arController.addEventListener("markerNum", function (event) {
+						console.log('markerNum',event)
 					});
-			
-			break;
-			default:
-			// mesh.position.y = 1.25/2;
-			// markerRoot.add( mesh );
+					arToolkitContext.arController.addEventListener("markerFound", function (event) {
+						console.log('markerFound',event)
+					});
+					arToolkitContext.arController.addEventListener("markerLost", function (event) {
+						console.log('markerLost',event)
+					});
+
+					// arToolkitContext.arController.addEventListener("markerLost", function (event) {
+					// 	console.log('marker lost',event)
+					// 	if (event.data.marker.id === 10) {
+					// 		iframe_1 = null;
+					// 		console.log('before', document.getElementById('robot_arm_url_iframe'))
+					// 		if (document.getElementById('robot_arm_url_iframe') !== undefined)
+					// 			document.removeChild(document.getElementById('robot_arm_url_iframe'))
+					// 		console.log('after', document.getElementById('robot_arm_url_iframe'))
+
+					// 	}
+					// 	if (event.data.marker.id === 12) {
+					// 		iframe_2 = null
+					// 		if (document.getElementById('model_url_iframe') !== undefined)
+					// 			document.removeChild(document.getElementById('model_url_iframe'))
+					// 	}
+					// });
+
+
+					arToolkitContext.arController.addEventListener("getMarker", function (event) {
+						if (event.data.marker.id > 0) 
+						{
+							console.log('get marker',event.data.marker.id)
+
+						}
+						if (event.data.marker.id === 5 && modelVisible(5)) {
+							var s, v;
+						if (iframe_1 === undefined) {
+								let url = (localStorage.getItem('robot_arm_url') == ! null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
+								url = "https://scale-it.org/de/";
+								iframe_1 = createIframe(url, 'robot_arm_url_iframe')
+								s = [
+									0, 0, 1,
+									iframe_1.offsetWidth, 0, 1,
+									0, iframe_1.offsetHeight, 1
+								];
+
+								v = apply(adjugate(s), [iframe_1.offsetWidth, iframe_1.offsetHeight, 1]);
+
+								s = multiply(s, [
+									v[0], 0, 0,
+									0, v[1], 0,
+									0, 0, v[2]
+								]);
+								document.body.appendChild(iframe_1);
+							} else {
+
+								s = [
+									0, 0, 1,
+									iframe_1.offsetWidth, 0, 1,
+									0, iframe_1.offsetHeight, 1
+								];
+
+								v = apply(adjugate(s), [iframe_1.offsetWidth, iframe_1.offsetHeight, 1]);
+
+								s = multiply(s, [
+									v[0], 0, 0,
+									0, v[1], 0,
+									0, 0, v[2]
+								]);
+
+							}
+							var d = [
+								event.data.marker.vertex[(4 - event.data.marker.dir) % 4][0], event.data.marker.vertex[(4 - event.data.marker.dir) % 4][1], 1,
+								event.data.marker.vertex[(5 - event.data.marker.dir) % 4][0], event.data.marker.vertex[(5 - event.data.marker.dir) % 4][1], 1,
+								event.data.marker.vertex[(7 - event.data.marker.dir) % 4][0], event.data.marker.vertex[(7 - event.data.marker.dir) % 4][1], 1
+							];
+
+							var v = apply(adjugate(d), [event.data.marker.vertex[(6 - event.data.marker.dir) % 4][0], event.data.marker.vertex[(6 - event.data.marker.dir) % 4][1], 1]);
+
+							d = multiply(d, [
+								v[0], 0, 0,
+								0, v[1], 0,
+								0, 0, v[2]
+							]);
+
+							var t = multiply(d, adjugate(s));
+
+							for (i = 0; i < 9; ++i) {
+								t[i] = t[i] / t[8];
+								t[i] = Math.abs(t[i]) < Number.EPSILON ? 0 : t[i];
+							}
+
+							t = [
+								t[0], t[1], 0, t[2],
+								t[3], t[4], 0, t[5],
+								0, 0, 1, 0,
+								t[6], t[7], 0, t[8]
+							];
+							if (document.getElementById(iframe_1.id) == null)
+								document.body.appendChild(iframe_1)
+
+							iframe_1.style.transform = "matrix3d(" + t.join(", ") + ")";
+							startTime_robot_arm = new Date();
+
+
+						} else if (scene.children[5].visible == false && scene.children[6].visible == true &&  iframe_1 !== undefined){
+							// console.log('iframe el', document.getElementsByTagName('iframe'))
+
+							// let el = document.getElementById(iframe_1.id)
+							// if ( el !== undefined && el != null)
+							// 	{
+							// 		el.remove()
+							// 	}
+							// console.log('iframe', iframe_1)
+							// document.removeChild(iframe_1)
+							
+							// iframe_1 = undefined;
+
+						
+						}
+						if (event.data.marker.id === 6 && modelVisible(6)) {
+							var s, v;
+							if (iframe_2 === undefined) {
+
+								let url = (localStorage.getItem('model_url') == ! null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
+								url = "https://scale-it.org/de/";
+								// if (document.getElementsByName('model_url_iframe') > 0)
+								// document.removeChild(document.getElementsByName('model_url_iframe')[0])
+
+								iframe_2 = createIframe(url, 'model_url_iframe')
+
+
+								s = [
+									0, 0, 1,
+									iframe_2.offsetWidth, 0, 1,
+									0, iframe_2.offsetHeight, 1
+								];
+
+								v = apply(adjugate(s), [iframe_2.offsetWidth, iframe_2.offsetHeight, 1]);
+
+								s = multiply(s, [
+									v[0], 0, 0,
+									0, v[1], 0,
+									0, 0, v[2]
+								]);
+								document.body.appendChild(iframe_2);
+
+							} else {
+								s = [
+									0, 0, 1,
+									iframe_2.offsetWidth, 0, 1,
+									0, iframe_2.offsetHeight, 1
+								];
+
+								v = apply(adjugate(s), [iframe_2.offsetWidth, iframe_2.offsetHeight, 1]);
+
+								s = multiply(s, [
+									v[0], 0, 0,
+									0, v[1], 0,
+									0, 0, v[2]
+								]);
+							}
+							var d = [
+								event.data.marker.vertex[(4 - event.data.marker.dir) % 4][0], event.data.marker.vertex[(4 - event.data.marker.dir) % 4][1], 1,
+								event.data.marker.vertex[(5 - event.data.marker.dir) % 4][0], event.data.marker.vertex[(5 - event.data.marker.dir) % 4][1], 1,
+								event.data.marker.vertex[(7 - event.data.marker.dir) % 4][0], event.data.marker.vertex[(7 - event.data.marker.dir) % 4][1], 1
+							];
+
+							var v = apply(adjugate(d), [event.data.marker.vertex[(6 - event.data.marker.dir) % 4][0], event.data.marker.vertex[(6 - event.data.marker.dir) % 4][1], 1]);
+
+							d = multiply(d, [
+								v[0], 0, 0,
+								0, v[1], 0,
+								0, 0, v[2]
+							]);
+
+							var t = multiply(d, adjugate(s));
+
+							for (i = 0; i < 9; ++i) {
+								t[i] = t[i] / t[8];
+								t[i] = Math.abs(t[i]) < Number.EPSILON ? 0 : t[i];
+							}
+
+							t = [
+								t[0], t[1], 0, t[2],
+								t[3], t[4], 0, t[5],
+								0, 0, 1, 0,
+								t[6], t[7], 0, t[8]
+							];
+							// iframe2.hidden = false;
+							// iframe2.style.display = "";
+							if (document.getElementById(iframe_2.id) == null)
+								document.body.appendChild(iframe_2)
+							iframe_2.style.transform = "matrix3d(" + t.join(", ") + ")";
+							startTime_model = new Date();
+							// iframe.hidden = true;
+							// mesh.visible = false;
+						}
+						if (event.data.marker.id !== 10) {
+							// console.log('marker id', event.data.marker.id);
+							// iframe.hidden = true;
+							// mesh.visible = false;
+						}
+						else {
+							// iframe.hidden = true;
+							// mesh.visible = false;
+						}
+						
+						if (!scene.children[6].visible && iframe_2 !== undefined && document.getElementById(iframe_2.id) !== undefined){
+							// document.removeChild(iframe_2)
+							// console.log('iframe el', document.getElementsByTagName('iframe'))
+
+							// iframe_2 = undefined;
+						}
+
+						// if (startTime_model !== undefined) {
+
+						// }
+						if (startTime_robot_arm !== undefined && iframe_1 != undefined) {
+							let t = new Date();
+							let timeDiffRobotArm =  t - startTime_robot_arm;	
+							timeDiffRobotArm /= 1000; 
+							if (timeDiffRobotArm > .5) {
+							let el_ = document.getElementById(iframe_1.id)
+							if ( el_ !== undefined && el_ != null)
+								{
+									el_.remove()
+								}
+							// console.log('iframe', iframe_1)
+							// document.removeChild(iframe_1)	
+						}
+						}
+						if (startTime_model !== undefined && iframe_2 != undefined) {
+							let t = new Date();
+							let timeDiffModel =  t - startTime_model;	
+							timeDiffModel /= 1000; 
+							if (timeDiffModel > .5) {
+							let el_ = document.getElementById(iframe_2.id)
+							if ( el_ !== undefined && el_ != null)
+								{
+									el_.remove()
+								}
+							// console.log('iframe', iframe_1)
+							// document.removeChild(iframe_1)	
+						}
+						}
+						// let timeDiffModel =  t - startTime_model;
+					
+
+					});
+				}
+			}
+
+			arToolkitSource.init(function onReady() {
+				onResize()
+			});
+
+			// handle resize event
+			window.addEventListener('resize', function () {
+				onResize()
+			});
+
+
+			////////////////////////////////////////////////////////////
+			// setup arToolkitContext
+			////////////////////////////////////////////////////////////	
+
+			// create atToolkitContext
+			arToolkitContext = new THREEx.ArToolkitContext({
+				cameraParametersUrl: 'data/camera-parameter/camera_para.dat',
+				detectionMode: 'mono'
+			});
+
+			// copy projection matrix to camera when initialization complete
+			arToolkitContext.init(function onCompleted() {
+				camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+				document.getElementsByTagName('canvas')[0].setAttribute('style', 'position:relative');
+			});
+
+
+
+			document.addEventListener('mousedown', function (evt) {
+				// console.log('css_object',css_object)
+				// console.log('arToolkitContext',arToolkitContext)
+				// console.log('arToolkitSource',arToolkitSource)
+				evt.preventDefault()
+				onDocumentMouseMove(evt);
+			});
+
+			// document.addEventListener('mousemove', function(evt){
+			// 	// console.log('css_object',css_object)
+			// 	// console.log('arToolkitContext',arToolkitContext)
+			// 	// console.log('arToolkitSource',arToolkitSource)
+			// 	onDocumentMouseMove(evt);
+
+			// });
+
+
+			window.addEventListener('touchstart', function (evt) {
+				evt.preventDefault();
+				console.log('css_object', css_object)
+				console.log('arToolkitContext', arToolkitContext)
+				console.log('arToolkitSource', arToolkitSource)
+				// console.log('arToolkitContext',arToo)
+
+
+				onDocumentMouseMove(evt);
+			}
+			)
+			////////////////////////////////////////////////////////////
+			// setup markerRoots
+			////////////////////////////////////////////////////////////
+
+			let loader = new THREE.TextureLoader();
+			// let texture = loader.load( 'images/border.png' );
+			//scale.hero hiro
+			let patternArray = ["letterA", "letterB", "letterC", "letterD", "letterF", "robot-arm_marker", "board_marker"];
+			let colorArray = [0xff0000, 0xff8800, 0xffff00, 0x00cc00, 0x0000ff, 0xcc00ff, 0xcccccc];
+			for (let i = 0; i < 7; i++) {
+				let markerRoot = new THREE.Group();
+				// let markerRootCSS = new THREE.Group();
+				scene.add(markerRoot);
+				// css_scene.add(markerRootCSS);
+				let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+					type: 'pattern', patternUrl: "data/patterns/" + patternArray[i] + ".patt",
+				});
+				// let markerControlsCss = new THREEx.ArMarkerControls(arToolkitContext, markerRootCSS, {
+				// 	type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
+				// });
+
+				switch (i) {
+					case 5:
+
+
+
+						// var geometry = new THREE.PlaneGeometry(1, 1);
+						// var mesh = new THREE.Mesh(geometry, base_material);
+						// mesh.position.copy(object.position);
+						// mesh.rotation.copy(object.rotation);
+						// mesh.scale.copy(object.scale);
+						// markerRoot.add(mesh);
+
+						let geometry1 = new THREE.PlaneBufferGeometry(1, 1, 4, 4);
+						let materialx = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.0 });
+						mesh6 = new THREE.Mesh(geometry1, materialx);
+						mesh6.rotation.x = -Math.PI / 2;
+						mesh6.name = 'machine_base'
+						markerRoot.add(mesh6);
+
+						function onProgress(xhr) { console.log((xhr.loaded / xhr.total * 100) + '% loaded'); }
+						function onError(xhr) { console.log('An error happened'); }
+
+						{
+							let map = new THREE.TextureLoader().setPath('data/images/').load('scale_open.png');
+							let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+							let sprite = new THREE.Sprite(material1);
+							sprite.rotation.x = 180
+							sprite.rotation.z = 0
+							sprite.rotation.y = 180
+							sprite.position.y = 1.5
+							sprite.position.x = 1
+							sprite.position.z = -.5
+							sprite.scale.x = .3
+							sprite.scale.y = .3
+							sprite.scale.z = .3
+							sprite.visible = false;
+							sprite.name = "machine_open"
+
+							markerRoot.add(sprite);
+							{
+								let geometry2 = new THREE.PlaneBufferGeometry(1, 1, 4, 4);
+
+								let materialy = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.0, side: THREE.DoubleSide });
+								let nmesh7 = new THREE.Mesh(geometry2, materialy);
+								nmesh7.rotation.x = 90;
+								nmesh7.position.x = 1;
+								nmesh7.position.z = -.5;
+								nmesh7.position.y = 1.5;
+								nmesh7.scale.x = .6
+								nmesh7.scale.y = .6
+								nmesh7.scale.z = .6
+								nmesh7.visible = false;
+								nmesh7.name = 'machine_open_base';
+								markerRoot.add(nmesh7);
+							}
+						}
+						{
+							let map = new THREE.TextureLoader().setPath('data/images/').load('scale_2.png');
+							let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+							let sprite = new THREE.Sprite(material1);
+							sprite.rotation.x = 180
+							sprite.rotation.z = 0
+							sprite.rotation.y = 180
+							sprite.position.y = .5
+							sprite.visible = false;
+							sprite.name = "machine_sprite"
+							markerRoot.add(sprite);
+						}
+
+						new THREE.MTLLoader()
+							.setPath('data/models/')
+							.load('model-1.mtl', function (materials) {
+								materials.preload();
+								new THREE.OBJLoader()
+									.setMaterials(materials)
+									.setPath('data/models/')
+									.load('model-1.obj', function (group) {
+										mesh0 = group//.children[0];
+										mesh0.position.y = 1.25 / 3;
+										mesh0.scale.set(1.2, 1.2, 1.2);
+										mesh0.name = "machine_model"
+										mesh0.visible = true
+										markerRoot.add(mesh0);
+									}, onProgress, onError);
+							});
+						break;
+
+					case 6:
+						{
+							let geometry2 = new THREE.PlaneBufferGeometry(1, 1, 4, 4);
+
+							let materialy = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.00 });
+							mesh7 = new THREE.Mesh(geometry2, materialy);
+							mesh7.rotation.x = -Math.PI / 2;
+							mesh7.name = 'machine_base'
+							markerRoot.add(mesh7);
+						}
+
+						function onProgress(xhr) { console.log((xhr.loaded / xhr.total * 100) + '% loaded'); }
+						function onError(xhr) { console.log('An error happened'); }
+
+						{
+							let map = new THREE.TextureLoader().setPath('data/images/').load('scale_open.png');
+							let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+							let sprite = new THREE.Sprite(material1);
+							sprite.rotation.x = 180
+							sprite.rotation.z = 0
+							sprite.rotation.y = 180
+							sprite.position.y = 1.5
+							sprite.position.x = 1
+							sprite.position.z = -.5
+							sprite.scale.x = .3
+							sprite.scale.y = .3
+							sprite.scale.z = .3
+							sprite.visible = false;
+							sprite.name = "product_open"
+							markerRoot.add(sprite);
+							{
+								let geometry2 = new THREE.PlaneBufferGeometry(1, 1, 4, 4);
+
+								let materialy = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.0, side: THREE.DoubleSide });
+								let nmesh7 = new THREE.Mesh(geometry2, materialy);
+								nmesh7.rotation.x = 90;
+								nmesh7.position.x = 1;
+								nmesh7.position.z = -.5;
+								nmesh7.position.y = 1.5;
+								nmesh7.scale.x = .6
+								nmesh7.scale.y = .6
+								nmesh7.scale.z = .6
+								nmesh7.name = 'product_open_base';
+								nmesh7.visible = false;
+								markerRoot.add(nmesh7);
+							}
+						}
+
+						{
+							let map = new THREE.TextureLoader().setPath('data/images/').load('scale_it_1.png');
+							let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+							let sprite = new THREE.Sprite(material1);
+							sprite.rotation.x = 180
+							sprite.rotation.z = 0
+							sprite.rotation.y = 180
+							sprite.position.y = .5
+							console.log('sprite', sprite)
+							sprite.visible = false;
+							sprite.name = "product_sprite"
+							markerRoot.add(sprite);
+						}
+
+
+						new THREE.MTLLoader()
+							.setPath('data/models/')
+							.load('model-2.mtl', function (materials) {
+								materials.preload();
+								new THREE.OBJLoader()
+									.setMaterials(materials)
+									.setPath('data/models/')
+									.load('model-2.obj', function (group) {
+										mesh0 = group//.children[0];
+										mesh0.position.y = 1.25 / 3;
+										mesh0.scale.set(.7, .7, .7);
+										mesh0.visible = true;
+										mesh0.name = "product_model"
+										markerRoot.add(mesh0);
+										models_dict.push({
+											key: mesh0.name,
+											value: mesh0
+										})
+									}, onProgress, onError);
+							});
+
+						break;
+					default:
+				}
+			}
+			// console.log('markerRoot',markerRoot)
+			// console.log('markerRootSet',markerControls)
+
+			console.log('marker scene',scene)
+
 		}
-	}
-
-
-
-}
-
-function adjugate(m) { // Compute the adjugate of m
-    return [
-        m[4]*m[8]-m[7]*m[5],m[7]*m[2]-m[1]*m[8],m[1]*m[5]-m[4]*m[2],
-        m[6]*m[5]-m[3]*m[8],m[0]*m[8]-m[6]*m[2],m[3]*m[2]-m[0]*m[5],
-        m[3]*m[7]-m[6]*m[4],m[6]*m[1]-m[0]*m[7],m[0]*m[4]-m[3]*m[1]
-    ];
-}
-
-function multiply(a,b) { // multiply two matrices
-    a = [
-        a[0],a[3],a[6],
-        a[1],a[4],a[7],
-        a[2],a[5],a[8]
-    ];
-
-    b = [
-        b[0],b[3],b[6],
-        b[1],b[4],b[7],
-        b[2],b[5],b[8]
-    ];
-
-    var m = Array(9);
-
-    for (var i = 0; i != 3; ++i) {
-        for (var j = 0; j != 3; ++j) {
-            var mij = 0;
-            for (var k = 0; k != 3; ++k) {
-                mij += a[3*i + k]*b[3*k + j];
-            }
-            m[3*i + j] = mij;
-        }
-    }
-
-    return [
-        m[0],m[3],m[6],
-        m[1],m[4],m[7],
-        m[2],m[5],m[8]
-    ];
-}
-
-function apply(m,v) { // multiply matrix and vector
-    return [
-        m[0]*v[0] + m[3]*v[1] + m[6]*v[2],
-        m[1]*v[0] + m[4]*v[1] + m[7]*v[2],
-        m[2]*v[0] + m[5]*v[1] + m[8]*v[2]
-    ];
-}
-
-var createIframe = function(url, id) {
-	let iframe = document.createElement("iframe");
-	iframe.src = url;
-	iframe.style.position = "absolute";
-	iframe.style.width = '480px';
-	iframe.style.height = '360px';
-	iframe.style.left = "0";
-	iframe.style.top = "0";
-	iframe.style.transformOrigin = "0 0";
-	iframe.style.rotate = "45 0"
-	iframe.offsetTop = -300
-	iframe.offsetLeft = -40
-	iframe.id = id
-
-	iframe.style.width = '480px';
-	iframe.style.height = '360px';
-	
-	// iframe.style.display = "none";
-	// iframe.style.opacity = "100%";
-	return iframe;
-}
-
-// var iframe = createIframe(robot_arm_url);
-// var iframe2 = createIframe(model_url); 
-// // iframe.hidden = true
-
-
-// document.body.appendChild(iframe);
-// document.body.appendChild(iframe2);
-
-
-
-
-var lookAt = new THREE.Vector3(0, 0, 0);
-
-function update()
-{
-	controls.update();
-	if ( arToolkitSource.ready !== false )
-	{
-		arToolkitContext.update( arToolkitSource.domElement );
-	}
-
-}
-
-function render()
-{
-	css_renderer.render( css_scene, camera )
-	renderer.render( scene, camera );
-}
-
-function animate()
-{
-	requestAnimationFrame(animate);
-	deltaTime = clock.getDelta();
-	totalTime += deltaTime;
-	if (doRotate) {
-		if (scene.children[7] !== undefined && scene.children[7].children[4] !== undefined)
-		scene.children[7].children[4].rotation.y += Math.PI * deltaTime * 0.4
-		
-		if (scene.children[8] !== undefined && scene.children[8].children[4] !== undefined)
-		scene.children[8].children[4].rotation.y += Math.PI * deltaTime * .4
-
-	}
-	
-	update();
-	render();
-}
-
-var containsGun = function (objects) {
-    if (!objects || objects === undefined || objects == null) return false
-    if (objects[0].object.name == 'PortalGun') { return true }
-    return false
-}
-var doObject = function(o)
-{
-	console.log('name',o.object.name)
-	console.log('visible',o.object.visible)
-	if (o.object.name !== undefined)
-	{
-		switch (o.object.name)
+		function modelVisible(id)
 		{
-			case "machine_sprite":
-			o.object.parent.children[0].visible = !o.object.parent.children[0].visible
-			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
-			o.object.visible = !o.object.visible
-
-			break;
-			case "machine_model":
-			o.object.parent.children[0].visible = !o.object.parent.children[0].visible
-			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-			o.object.parent.children[3].visible = !o.object.parent.children[3].visible
-			o.object.visible = !o.object.visible
-			break;
-			case "machine_open_base":
-			alert('open machine')
-			case "machine_open":
-			console.log('open machine')
-			// if (o.object.visible)			
-			window.location.href = (localStorage.getItem('robot_arm_url') === null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
-
-			// window.location.href = robot_arm_url;
-			break;
-
-			case "machine_base":
-			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-			o.object.parent.children[3].visible = !o.object.parent.children[3].visible
-			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
-			o.object.visible = !o.object.visible
-			break;
-
-			case "product_model":
-			o.object.parent.children[0].visible = !o.object.parent.children[0].visible
-			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-			o.object.parent.children[3].visible = !o.object.parent.children[3].visible
-			o.object.visible = !o.object.visible
-
-			break;
-			case "product_sprite":
-			o.object.parent.children[0].visible = !o.object.parent.children[0].visible
-			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
-			o.object.visible = !o.object.visible
-			
-			break;
-			case "product_open_base":
-			alert('open product')
-			case "product_open":
-			console.log('open product')
-			// if (o.object.visible)	
-			window.location.href = (localStorage.getItem('model_url') === null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
-			break;
-			case "product_base":
-			o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-			o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-			o.object.parent.children[3].visible = !o.object.parent.children[3].visible
-			o.object.parent.children[4].visible = !o.object.parent.children[4].visible
-			o.object.visible = !o.object.visible
-			break;
-			default:
+			return true;
 		}
-	}
-}
 
-function flip_method(object)
-{
-	if (object === undefined || object.children === undefined || object.children[1] === undefined || object.children[2] === undefined) 
-	{
-		console.error('undefiend')
-		return;
-	}
-	if (object.children[1].visible == false)
-	{
-		object.children[1].visible	= true;
-		object.children[2].visible	= false;
+		function adjugate(m) { // Compute the adjugate of m
+			return [
+				m[4] * m[8] - m[7] * m[5], m[7] * m[2] - m[1] * m[8], m[1] * m[5] - m[4] * m[2],
+				m[6] * m[5] - m[3] * m[8], m[0] * m[8] - m[6] * m[2], m[3] * m[2] - m[0] * m[5],
+				m[3] * m[7] - m[6] * m[4], m[6] * m[1] - m[0] * m[7], m[0] * m[4] - m[3] * m[1]
+			];
+		}
 
-	} else {
-		object.children[1].visible	= false;
-		object.children[2].visible	= true;
-	}
-}
+		function multiply(a, b) { // multiply two matrices
+			a = [
+				a[0], a[3], a[6],
+				a[1], a[4], a[7],
+				a[2], a[5], a[8]
+			];
 
-var onDocumentMouseMove = function (evt) {
-    var raycaster = new THREE.Raycaster(); // create once
-    var mouse = new THREE.Vector2(); // create once
-	if (evt.targetTouches !== undefined) {
-	mouse.x = +(evt.targetTouches[0].pageX / window.innerWidth) * 2 - 1;
-	mouse.y = -(evt.targetTouches[0].pageY / window.innerHeight) * 2 + 1;	
-	} else {
- 	mouse.x = (evt.clientX / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = - (evt.clientY / renderer.domElement.clientHeight) * 2 + 1;
-	}
-   
-   console.log(`mouse (x,y) = (${mouse.x},${mouse.y})`);
+			b = [
+				b[0], b[3], b[6],
+				b[1], b[4], b[7],
+				b[2], b[5], b[8]
+			];
 
-	raycaster.setFromCamera(mouse, camera);
-	console.log('ray', scene.children)
-	if (scene.children[8] === undefined || scene.children[7] === undefined) return
-    console.log('ray', scene.children[7].children)
-	console.log('ray', scene.children[8].children)
-    // var intersects = raycaster.intersectObjects(scene.children[7].children.concat(scene.children[8].children))
-	var intersects = raycaster.intersectObjects(scene.children[7].children).concat(raycaster.intersectObjects(scene.children[8].children))
+			var m = Array(9);
 
-	console.log('intersects',intersects);
-	if (intersects.length > 0) doObject(intersects[0]);
-}
-</script>
+			for (var i = 0; i != 3; ++i) {
+				for (var j = 0; j != 3; ++j) {
+					var mij = 0;
+					for (var k = 0; k != 3; ++k) {
+						mij += a[3 * i + k] * b[3 * k + j];
+					}
+					m[3 * i + j] = mij;
+				}
+			}
+
+			return [
+				m[0], m[3], m[6],
+				m[1], m[4], m[7],
+				m[2], m[5], m[8]
+			];
+		}
+
+		function apply(m, v) { // multiply matrix and vector
+			return [
+				m[0] * v[0] + m[3] * v[1] + m[6] * v[2],
+				m[1] * v[0] + m[4] * v[1] + m[7] * v[2],
+				m[2] * v[0] + m[5] * v[1] + m[8] * v[2]
+			];
+		}
+
+		var createIframe = function (url, id) {
+			let iframe = document.createElement("iframe");
+			iframe.src = url;
+			iframe.style.position = "absolute";
+			iframe.style.width = '480px';
+			iframe.style.height = '360px';
+			iframe.style.left = "0";
+			iframe.style.top = "0";
+			iframe.style.transformOrigin = "0 0";
+			iframe.style.rotate = "45 0"
+			iframe.offsetTop = -300
+			iframe.offsetLeft = -40
+			iframe.id = id
+
+			iframe.style.width = '480px';
+			iframe.style.height = '360px';
+
+			return iframe;
+		}
+
+
+		var lookAt = new THREE.Vector3(0, 0, 0);
+
+		function update() {
+			// controls.update();
+			if (arToolkitSource.ready !== false) {
+				arToolkitContext.update(arToolkitSource.domElement);
+			}
+
+		}
+
+		function render() {
+			// css_renderer.render( css_scene, camera )
+			renderer.render(scene, camera);
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			deltaTime = clock.getDelta();
+			totalTime += deltaTime;
+			if (doRotate) {
+				if (scene.children[7] !== undefined && scene.children[7].children[4] !== undefined)
+					scene.children[7].children[4].rotation.y += Math.PI * deltaTime * 0.4
+
+				if (scene.children[8] !== undefined && scene.children[8].children[4] !== undefined)
+					scene.children[8].children[4].rotation.y += Math.PI * deltaTime * .4
+
+			}
+
+			update();
+			render();
+		}
+
+		var containsGun = function (objects) {
+			if (!objects || objects === undefined || objects == null) return false
+			if (objects[0].object.name == 'PortalGun') { return true }
+			return false
+		}
+		var doObject = function (o) {
+			console.log('name', o.object.name)
+			console.log('visible', o.object.visible)
+			if (o.object.name !== undefined) {
+				switch (o.object.name) {
+					case "machine_sprite":
+						o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+						o.object.visible = !o.object.visible
+
+						break;
+					case "machine_model":
+						o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+						o.object.visible = !o.object.visible
+						break;
+					case "machine_open_base":
+						alert('open machine')
+					case "machine_open":
+						console.log('open machine')
+						// if (o.object.visible)			
+						window.location.href = (localStorage.getItem('robot_arm_url') === null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
+
+						// window.location.href = robot_arm_url;
+						break;
+
+					case "machine_base":
+						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+						o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+						o.object.visible = !o.object.visible
+						break;
+
+					case "product_model":
+						o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+						o.object.visible = !o.object.visible
+
+						break;
+					case "product_sprite":
+						o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+						o.object.visible = !o.object.visible
+
+						break;
+					case "product_open_base":
+						alert('open product')
+					case "product_open":
+						console.log('open product')
+						// if (o.object.visible)	
+						window.location.href = (localStorage.getItem('model_url') === null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
+						break;
+					case "product_base":
+						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+						o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+						o.object.visible = !o.object.visible
+						break;
+					default:
+				}
+			}
+		}
+
+		function flip_method(object) {
+			if (object === undefined || object.children === undefined || object.children[1] === undefined || object.children[2] === undefined) {
+				console.error('undefiend')
+				return;
+			}
+			if (object.children[1].visible == false) {
+				object.children[1].visible = true;
+				object.children[2].visible = false;
+
+			} else {
+				object.children[1].visible = false;
+				object.children[2].visible = true;
+			}
+		}
+
+		var onDocumentMouseMove = function (evt) {
+			var raycaster = new THREE.Raycaster(); // create once
+			var mouse = new THREE.Vector2(); // create once
+			if (evt.targetTouches !== undefined) {
+				mouse.x = +(evt.targetTouches[0].pageX / window.innerWidth) * 2 - 1;
+				mouse.y = -(evt.targetTouches[0].pageY / window.innerHeight) * 2 + 1;
+			} else {
+				mouse.x = (evt.clientX / renderer.domElement.clientWidth) * 2 - 1;
+				mouse.y = - (evt.clientY / renderer.domElement.clientHeight) * 2 + 1;
+			}
+
+			console.log(`mouse (x,y) = (${mouse.x},${mouse.y})`);
+
+			raycaster.setFromCamera(mouse, camera);
+			console.log('ray', scene.children)
+			if (scene.children[8] === undefined || scene.children[7] === undefined) return
+			console.log('ray', scene.children[7].children)
+			console.log('ray', scene.children[8].children)
+			// var intersects = raycaster.intersectObjects(scene.children[7].children.concat(scene.children[8].children))
+			var intersects = raycaster.intersectObjects(scene.children[7].children).concat(raycaster.intersectObjects(scene.children[8].children))
+
+			console.log('intersects', intersects);
+			if (intersects.length > 0) doObject(intersects[0]);
+		}
+	</script>
 
 </body>
+
 </html>

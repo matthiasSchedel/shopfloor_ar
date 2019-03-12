@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "rebase":"git checkout gh-pages; git rebase dev_css; git push origin gh-pages; git checkout dev_css",
+    "rebase:master":"git checkout master; git rebase dev_css; git push origin master; git checkout dev_css",
     "start":"http-server -S -C cert.pem -o",
     "init:cert":"openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem"
   },

@@ -7,8 +7,8 @@
 	<!-- include three.js library -->
 	<script src='js/three.js'></script>
 
-	<script src="js/controls/TrackballControls.js"></script>
-	<script src="js/renderers/CSS3DRenderer.js"></script>
+	<!-- <script src="js/controls/TrackballControls.js"></script>
+	<script src="js/renderers/CSS3DRenderer.js"></script> -->
 
 	<script src='js/OBJLoader.js'></script>
 	<script src='js/MTLLoader.js'></script>
@@ -186,8 +186,7 @@
 
 		function openNav() {
 			window.location.href = "Options.html"
-			// console.log('open')
-			// document.getElementById("myNav").style.height = "100%";
+
 		}
 
 		function closeNav() {
@@ -236,7 +235,6 @@
 
 		function initialize() {
 			scene = new THREE.Scene();
-			// css_scene = new THREE.Scene();
 
 			base_material = new THREE.MeshBasicMaterial({
 				color: 0x000008,
@@ -249,10 +247,6 @@
 
 			camera = new THREE.PerspectiveCamera();
 
-			// css_renderer = new THREE.CSS3DRenderer();
-			// css_renderer.setSize(window.innerWidth, window.innerHeight);
-			// css_renderer.domElement.style.position = 'absolute';
-			// css_renderer.domElement.style.top = 0;
 			renderer = new THREE.WebGLRenderer({
 				antialias: true,
 				alpha: true
@@ -261,21 +255,14 @@
 			renderer.domElement.style.position = 'absolute';
 			renderer.domElement.style.zIndex = -100;
 			renderer.domElement.style.top = 0
-			// document.body.appendChild(css_renderer.domElement);
 			document.body.appendChild(renderer.domElement);
-			// document.body.appendChild(renderer.domElement);
-
-			// controls = new THREE.TrackballControls( camera );
-			// controls.rotateSpeed = 4;
 
 			renderer.setClearColor(new THREE.Color(0x0000000), 0)
 			renderer.setSize(640, 480);
 			renderer.domElement.style.position = 'absolute'
 			renderer.domElement.style.top = '0px'
 			renderer.domElement.style.left = '0px'
-			// document.body.appendChild( renderer.domElement );
 
-			// console.log('css stuff',css_renderer, camera)
 			clock = new THREE.Clock();
 			deltaTime = 0;
 			totalTime = 0;
@@ -299,34 +286,7 @@
 
 					
 					console.log('arToolkitContext.arController',arToolkitContext.arController)
-					
-					arToolkitContext.arController.addEventListener("markerNum", function (event) {
-						// console.log('markerNum',event)
-					});
-					arToolkitContext.arController.addEventListener("markerFound", function (event) {
-						// console.log('markerFound',event)
-					});
-					arToolkitContext.arController.addEventListener("markerLost", function (event) {
-						// console.log('markerLost',event)
-					});
-
-					// arToolkitContext.arController.addEventListener("markerLost", function (event) {
-					// 	console.log('marker lost',event)
-					// 	if (event.data.marker.id === 10) {
-					// 		iframe_1 = null;
-					// 		console.log('before', document.getElementById('robot_arm_url_iframe'))
-					// 		if (document.getElementById('robot_arm_url_iframe') !== undefined)
-					// 			document.removeChild(document.getElementById('robot_arm_url_iframe'))
-					// 		console.log('after', document.getElementById('robot_arm_url_iframe'))
-
-					// 	}
-					// 	if (event.data.marker.id === 12) {
-					// 		iframe_2 = null
-					// 		if (document.getElementById('model_url_iframe') !== undefined)
-					// 			document.removeChild(document.getElementById('model_url_iframe'))
-					// 	}
-					// });
-
+				
 
 					arToolkitContext.arController.addEventListener("getMarker", function (event) {
 						if (event.data.marker.id > 0) 
@@ -337,8 +297,8 @@
 						if (event.data.marker.id === 5 && modelVisible(5)) {
 							var s, v;
 						if (iframe_1 === undefined) {
-								let url = (localStorage.getItem('robot_arm_url') == ! null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
-								url = "https://scale-it.org/de/";
+								let url = (localStorage.getItem('robot_arm_url') == null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
+								// url = "https://scale-it.org/de/";
 								iframe_1 = createIframe(url, 'robot_arm_url_iframe')
 								s = [
 									0, 0, 1,
@@ -406,29 +366,15 @@
 
 
 						} else if (scene.children[5].visible == false && scene.children[6].visible == true &&  iframe_1 !== undefined){
-							// console.log('iframe el', document.getElementsByTagName('iframe'))
-
-							// let el = document.getElementById(iframe_1.id)
-							// if ( el !== undefined && el != null)
-							// 	{
-							// 		el.remove()
-							// 	}
-							// console.log('iframe', iframe_1)
-							// document.removeChild(iframe_1)
-							
-							// iframe_1 = undefined;
-
 						
 						}
 						if (event.data.marker.id === 6 && modelVisible(6)) {
 							var s, v;
 							if (iframe_2 === undefined) {
 
-								let url = (localStorage.getItem('model_url') == ! null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
-								url = "https://scale-it.org/de/";
-								// if (document.getElementsByName('model_url_iframe') > 0)
-								// document.removeChild(document.getElementsByName('model_url_iframe')[0])
-
+								let url = (localStorage.getItem('model_url') == null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
+								// url = "https://scale-it.org/de/";
+	
 								iframe_2 = createIframe(url, 'model_url_iframe')
 
 
@@ -489,35 +435,21 @@
 								0, 0, 1, 0,
 								t[6], t[7], 0, t[8]
 							];
-							// iframe2.hidden = false;
-							// iframe2.style.display = "";
 							if (document.getElementById(iframe_2.id) == null)
 								document.body.appendChild(iframe_2)
 							iframe_2.style.transform = "matrix3d(" + t.join(", ") + ")";
 							startTime_model = new Date();
-							// iframe.hidden = true;
-							// mesh.visible = false;
 						}
 						if (event.data.marker.id !== 10) {
-							// console.log('marker id', event.data.marker.id);
-							// iframe.hidden = true;
-							// mesh.visible = false;
 						}
 						else {
-							// iframe.hidden = true;
-							// mesh.visible = false;
+
 						}
 						
 						if (!scene.children[6].visible && iframe_2 !== undefined && document.getElementById(iframe_2.id) !== undefined){
-							// document.removeChild(iframe_2)
-							// console.log('iframe el', document.getElementsByTagName('iframe'))
 
-							// iframe_2 = undefined;
 						}
 
-						// if (startTime_model !== undefined) {
-
-						// }
 						if (startTime_robot_arm !== undefined && iframe_1 != undefined) {
 							let t = new Date();
 							let timeDiffRobotArm =  t - startTime_robot_arm;	
@@ -528,8 +460,6 @@
 								{
 									el_.remove()
 								}
-							// console.log('iframe', iframe_1)
-							// document.removeChild(iframe_1)	
 						}
 						}
 						if (startTime_model !== undefined && iframe_2 != undefined) {
@@ -582,17 +512,11 @@
 
 
 			document.addEventListener('mousedown', function (evt) {
-				// console.log('css_object',css_object)
-				// console.log('arToolkitContext',arToolkitContext)
-				// console.log('arToolkitSource',arToolkitSource)
 				evt.preventDefault()
 				onDocumentMouseMove(evt);
 			});
 
 			// document.addEventListener('mousemove', function(evt){
-			// 	// console.log('css_object',css_object)
-			// 	// console.log('arToolkitContext',arToolkitContext)
-			// 	// console.log('arToolkitSource',arToolkitSource)
 			// 	onDocumentMouseMove(evt);
 
 			// });
@@ -600,11 +524,6 @@
 
 			window.addEventListener('touchstart', function (evt) {
 				evt.preventDefault();
-				// console.log('css_object', css_object)
-				// console.log('arToolkitContext', arToolkitContext)
-				// console.log('arToolkitSource', arToolkitSource)
-				// console.log('arToolkitContext',arToo)
-
 
 				onDocumentMouseMove(evt);
 			}
@@ -614,33 +533,17 @@
 			////////////////////////////////////////////////////////////
 
 			let loader = new THREE.TextureLoader();
-			// let texture = loader.load( 'images/border.png' );
-			//scale.hero hiro
 			let patternArray = ["letterA", "letterB", "letterC", "letterD", "letterF", "robot-arm_marker", "board_marker"];
 			let colorArray = [0xff0000, 0xff8800, 0xffff00, 0x00cc00, 0x0000ff, 0xcc00ff, 0xcccccc];
 			for (let i = 0; i < 7; i++) {
 				let markerRoot = new THREE.Group();
-				// let markerRootCSS = new THREE.Group();
 				scene.add(markerRoot);
-				// css_scene.add(markerRootCSS);
 				let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
 					type: 'pattern', patternUrl: "data/patterns/" + patternArray[i] + ".patt",
 				});
-				// let markerControlsCss = new THREEx.ArMarkerControls(arToolkitContext, markerRootCSS, {
-				// 	type : 'pattern', patternUrl : "data/patterns/" + patternArray[i] + ".patt",
-				// });
 
 				switch (i) {
 					case 5:
-
-
-
-						// var geometry = new THREE.PlaneGeometry(1, 1);
-						// var mesh = new THREE.Mesh(geometry, base_material);
-						// mesh.position.copy(object.position);
-						// mesh.rotation.copy(object.rotation);
-						// mesh.scale.copy(object.scale);
-						// markerRoot.add(mesh);
 
 						let geometry1 = new THREE.PlaneBufferGeometry(1, 1, 4, 4);
 						let materialx = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.00 });
@@ -656,13 +559,14 @@
 							let map = new THREE.TextureLoader().setPath('data/images/').load('scale_open.png');
 							let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
 							let sprite = new THREE.Sprite(material1);
-							sprite.rotation.x = 90
-							sprite.rotation.z = 0
+							sprite.rotation.x = Math.PI / 2;
+							// sprite.rotation.z = 0
 							// sprite.rotation.y = 180
 							
-							sprite.position.x = 1
-							sprite.position.y = 1.3
-							sprite.position.z = -.3
+							sprite.position.x = -.8
+							// sprite.position.x = .4
+							sprite.position.y = 1.5
+							// sprite.position.z = -.3
 
 							sprite.scale.x = .6
 							sprite.scale.y = .6
@@ -673,35 +577,35 @@
 							markerRoot.add(sprite);
 							{
 								let geometry2 = new THREE.PlaneBufferGeometry(1, 1, 4, 4);
-
-								let materialy = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.00, side: THREE.DoubleSide });
+								let materialy = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.00 });
 								let nmesh7 = new THREE.Mesh(geometry2, materialy);
-								nmesh7.rotation.x = 90;
+								// nmesh7.rotation.x = 90;
+								nmesh7.rotation.x = -Math.PI / 2;
 
-								nmesh7.position.x = 1;
+								nmesh7.position.x = -1;
 								nmesh7.position.y = 1.5;
-								nmesh7.position.z = -.3;
+								// nmesh7.position.z = -.3;
 
-								nmesh7.scale.x = .6
-								nmesh7.scale.y = .6
-								nmesh7.scale.z = .6
-								nmesh7.visible = false;
+								nmesh7.scale.x = 1.2
+								nmesh7.scale.y = 1.2
+								// nmesh7.scale.z = 1.2
+								// nmesh7.visible = false;
 								nmesh7.name = 'machine_open_base';
 								markerRoot.add(nmesh7);
 							}
 						}
-						{
-							let map = new THREE.TextureLoader().setPath('data/images/').load('scale_it.jpg');
-							let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
-							let sprite = new THREE.Sprite(material1);
-							sprite.rotation.x = 180
-							sprite.rotation.z = 0
-							sprite.rotation.y = 180
-							sprite.position.y = .5
-							sprite.visible = false;
-							sprite.name = "machine_sprite"
-							markerRoot.add(sprite);
-						}
+						// {
+						// 	let map = new THREE.TextureLoader().setPath('data/images/').load('scale_it.jpg');
+						// 	let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+						// 	let sprite = new THREE.Sprite(material1);
+						// 	sprite.rotation.x = 180
+						// 	sprite.rotation.z = 0
+						// 	sprite.rotation.y = 180
+						// 	sprite.position.y = .5
+						// 	sprite.visible = false;
+						// 	sprite.name = "machine_sprite"
+						// 	markerRoot.add(sprite);
+						// }
 
 						new THREE.MTLLoader()
 							.setPath('data/models/')
@@ -728,7 +632,7 @@
 							let materialy = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.00 });
 							mesh7 = new THREE.Mesh(geometry2, materialy);
 							mesh7.rotation.x = -Math.PI / 2;
-							mesh7.name = 'machine_base'
+							mesh7.name = 'product_base'
 							markerRoot.add(mesh7);
 						}
 
@@ -739,53 +643,58 @@
 							let map = new THREE.TextureLoader().setPath('data/images/').load('scale_open.png');
 							let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
 							let sprite = new THREE.Sprite(material1);
-							sprite.rotation.x = 90
+							sprite.rotation.x = Math.PI / 2;
 							// sprite.rotation.y = 0
 							// sprite.rotation.z = 0
 							
-							sprite.position.x = 1
-							sprite.position.y = 1.3
-							sprite.position.z = -.3
+							sprite.position.x = -.8
+							sprite.position.y = 1.5
+							// sprite.position.z = 0
 
 							sprite.scale.x = .6
 							sprite.scale.y = .6
 							sprite.scale.z = .6
 							sprite.visible = false;
 							sprite.name = "product_open"
+
+							// let sprite = createSprite('scale_open.png', 90, 1, 1.3, -.3, .6, false, 'product_open');
+
+
 							markerRoot.add(sprite);
 							{
 								let geometry2 = new THREE.PlaneBufferGeometry(1, 1, 4, 4);
 
-								let materialy = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.00, side: THREE.DoubleSide });
+								let materialy = new THREE.MeshBasicMaterial({ color: 0x000000, opacity: 0.00});
 								let nmesh7 = new THREE.Mesh(geometry2, materialy);
-								nmesh7.rotation.x = 90;
+								// nmesh7.rotation.x = 90;
+								nmesh7.rotation.x = -Math.PI / 2;
 
-								nmesh7.position.x = 1;
+								nmesh7.position.x = -1;
 								nmesh7.position.y = 1.5;
-								nmesh7.position.z = -.3;
+								// nmesh7.position.z = -.3;
 							
-								nmesh7.scale.x = .6
-								nmesh7.scale.y = .6
-								nmesh7.scale.z = .6
+								nmesh7.scale.x = 1.2
+								nmesh7.scale.y = 1.2
+								nmesh7.scale.z = 1.2
 								nmesh7.name = 'product_open_base';
 								nmesh7.visible = false;
 								markerRoot.add(nmesh7);
 							}
 						}
 
-						{
-							let map = new THREE.TextureLoader().setPath('data/images/').load('scale_it.jpg');
-							let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
-							let sprite = new THREE.Sprite(material1);
-							sprite.rotation.x = 180
-							sprite.rotation.z = 0
-							sprite.rotation.y = 180
-							sprite.position.y = .5
-							console.log('sprite', sprite)
-							sprite.visible = false;
-							sprite.name = "product_sprite"
-							markerRoot.add(sprite);
-						}
+						// {
+						// 	let map = new THREE.TextureLoader().setPath('data/images/').load('scale_it.jpg');
+						// 	let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+						// 	let sprite = new THREE.Sprite(material1);
+						// 	sprite.rotation.x = 180
+						// 	sprite.rotation.z = 0
+						// 	sprite.rotation.y = 180
+						// 	sprite.position.y = .5
+						// 	console.log('sprite', sprite)
+						// 	sprite.visible = false;
+						// 	sprite.name = "product_sprite"
+						// 	markerRoot.add(sprite);
+						// }
 
 
 						new THREE.MTLLoader()
@@ -802,10 +711,6 @@
 										mesh0.visible = true;
 										mesh0.name = "product_model"
 										markerRoot.add(mesh0);
-										models_dict.push({
-											key: mesh0.name,
-											value: mesh0
-										})
 									}, onProgress, onError);
 							});
 
@@ -819,9 +724,49 @@
 			console.log('marker scene',scene)
 
 		}
+
+
+
+		var createSprite = function(filename, rot_x, pos_x, pos_y, pos_z, scale, visible, name){
+				let map = new THREE.TextureLoader().setPath('data/images/').load('scale_open.png');
+				let material1 = new THREE.SpriteMaterial({ map: map, color: 0xffffff, fog: true });
+				let sprite = new THREE.Sprite(material1);
+				sprite.rotation.x = rot_x
+
+				sprite.position.x = pos_x
+				sprite.position.y = pos_y
+				sprite.position.z = pos_z
+
+				sprite.scale.x = scale
+				sprite.scale.y = scale
+				sprite.scale.z = scale
+				sprite.visible = visible
+				sprite.name = name
+				return sprite;
+		}
+
+		var createModelAndAdd = function(objFile, mtlFile, pos_x, pos_y, pos_z, scale, visible, name, markerRoot) {
+			new THREE.MTLLoader()
+							.setPath('data/models/')
+							.load(mtlFile, function (materials) {
+								materials.preload();
+								new THREE.OBJLoader()
+									.setMaterials(materials)
+									.setPath('data/models/')
+									.load(objFile, function (group) {
+										let mesh = group//.children[0];
+										mesh.position.y = pos_y;
+										mesh.scale.set(scale, scale, scale);
+										mesh.visible = visible;
+										mesh.name = name
+										markerRoot.add(mesh);
+									}, onProgress, onError);
+							});
+		}
+
 		function modelVisible(id)
 		{
-			return !scene.children[id + 1].children[4].visible
+			return scene.children[id + 1].children[1].visible
 			// return true;
 		}
 
@@ -913,18 +858,31 @@
 			requestAnimationFrame(animate);
 			deltaTime = clock.getDelta();
 			totalTime += deltaTime;
+			
 			if (doRotate) {
-				if (scene.children[7] !== undefined && scene.children[7].children[4] !== undefined)
-					scene.children[7].children[4].rotation.y += Math.PI * deltaTime * 0.4
+				if (scene.children[6] !== undefined && scene.children[6].children[3] !== undefined)
+					scene.children[6].children[3].rotation.y += Math.PI * deltaTime * 0.4
 
-				if (scene.children[8] !== undefined && scene.children[8].children[4] !== undefined)
-					scene.children[8].children[4].rotation.y += Math.PI * deltaTime * .4
+				if (scene.children[7] !== undefined && scene.children[7].children[3] !== undefined)
+					scene.children[7].children[3].rotation.y += Math.PI * deltaTime * 0.4
 
 			}
 
 			update();
 			render();
 		}
+		var flip_objects = function(parent) {
+			for (let i = 0; i < parent.children.length; i++)
+			{
+				let c = parent.children[i]
+				if (c.name !== "machine_model" && c.name !== "product_model" && c.name !== "product_base" && c.name !== "machine_base")
+				{
+					c.visible = !c.visible;
+				}
+			}
+		}
+
+
 
 		var containsGun = function (objects) {
 			if (!objects || objects === undefined || objects == null) return false
@@ -937,69 +895,79 @@
 			if (o.object.name !== undefined) {
 				switch (o.object.name) {
 					case "machine_sprite":
-						o.object.parent.children[0].visible = !o.object.parent.children[0].visible
-						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-						o.object.parent.children[4].visible = !o.object.parent.children[4].visible
-						o.object.visible = !o.object.visible
+						flip_objects(o.object.parent)
+						// o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+						// o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						// o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						// o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+						// o.object.visible = !o.object.visible
 
 						break;
 					case "machine_model":
-						o.object.parent.children[0].visible = !o.object.parent.children[0].visible
-						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-						o.object.parent.children[3].visible = !o.object.parent.children[3].visible
-						o.object.visible = !o.object.visible
+					flip_objects(o.object.parent)
+						// o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+						// o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						// o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						// o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+						// o.object.visible = !o.object.visible
 						break;
 					case "machine_open_base":
-						// alert('open machine')
+						// alert('open machine base')
+						// break;
 					case "machine_open":
+					// alert('open machine ')
 						console.log('open machine')
 						// if (o.object.visible)			
-						window.location.href = "https://scale-it.org/de/" 
-						//(localStorage.getItem('robot_arm_url') === null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
+						// window.location.href = "https://scale-it.org/de/" 
+						window.location.href = (localStorage.getItem('robot_arm_url') == null) ? "https://scale-it.org/de/" : localStorage.getItem('robot_arm_url');
 
 						// window.location.href = robot_arm_url;
 						break;
 
 					case "machine_base":
-						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-						o.object.parent.children[3].visible = !o.object.parent.children[3].visible
-						o.object.parent.children[4].visible = !o.object.parent.children[4].visible
-						o.object.visible = !o.object.visible
+					flip_objects(o.object.parent)
+						// o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						// o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						// o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+						// o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+						// o.object.visible = !o.object.visible
 						break;
 
 					case "product_model":
-						o.object.parent.children[0].visible = !o.object.parent.children[0].visible
-						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-						o.object.parent.children[3].visible = !o.object.parent.children[3].visible
-						o.object.visible = !o.object.visible
+					flip_objects(o.object.parent)
+						// o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+						// o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						// o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						// o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+						// o.object.visible = !o.object.visible
 
 						break;
 					case "product_sprite":
-						o.object.parent.children[0].visible = !o.object.parent.children[0].visible
-						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-						o.object.parent.children[4].visible = !o.object.parent.children[4].visible
-						o.object.visible = !o.object.visible
+					flip_objects(o.object.parent)
+						// o.object.parent.children[0].visible = !o.object.parent.children[0].visible
+						// o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						// o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						// o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+						// o.object.visible = !o.object.visible
 
 						break;
 					case "product_open_base":
-						// alert('open product')
+						// alert('open product base')
+						// break;
 					case "product_open":
-						console.log('open product')
+					alert('open product ')
+						// console.log('open product')
 						// if (o.object.visible)	
-						window.location.href = "https://scale-it.org/de/"
-						//(localStorage.getItem('model_url') === null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
+						// window.location.href = "https://scale-it.org/de/"
+						window.location.href = (localStorage.getItem('model_url') == null) ? "https://scale-it.org/de/" : localStorage.getItem('model_url');
 						break;
 					case "product_base":
-						o.object.parent.children[1].visible = !o.object.parent.children[1].visible
-						o.object.parent.children[2].visible = !o.object.parent.children[2].visible
-						o.object.parent.children[3].visible = !o.object.parent.children[3].visible
-						o.object.parent.children[4].visible = !o.object.parent.children[4].visible
-						o.object.visible = !o.object.visible
+					flip_objects(o.object.parent)
+						// o.object.parent.children[1].visible = !o.object.parent.children[1].visible
+						// o.object.parent.children[2].visible = !o.object.parent.children[2].visible
+						// o.object.parent.children[3].visible = !o.object.parent.children[3].visible
+						// o.object.parent.children[4].visible = !o.object.parent.children[4].visible
+						// o.object.visible = !o.object.visible
 						break;
 					default:
 				}
